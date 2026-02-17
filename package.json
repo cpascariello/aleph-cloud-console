@@ -1,0 +1,16 @@
+{
+  "name": "aleph-cloud-console",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter console dev",
+    "build": "pnpm --filter aleph-sdk build && pnpm --filter console build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test"
+  },
+  "packageManager": "pnpm@10.12.1",
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "sharp"]
+  }
+}

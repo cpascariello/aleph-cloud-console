@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@dt/atoms": ["../data-terminal/src/atoms"],
+      "@dt/molecules": ["../data-terminal/src/molecules"],
+      "@dt/hooks/*": ["../data-terminal/src/hooks/*"],
+      "@dt/providers/*": ["../data-terminal/src/providers/*"],
+      "@dt/lib/*": ["../data-terminal/src/lib/*"],
+      "@dt/types/*": ["../data-terminal/src/types/*"],
+      "@/atoms/*": ["../data-terminal/src/atoms/*"],
+      "@/molecules/*": ["../data-terminal/src/molecules/*"],
+      "@/hooks/*": ["./src/hooks/*", "../data-terminal/src/hooks/*"],
+      "@/lib/*": ["./src/lib/*", "../data-terminal/src/lib/*"],
+      "@/types/*": ["./src/types/*", "../data-terminal/src/types/*"]
+    },
+    "plugins": [{ "name": "next" }],
+    "incremental": true,
+    "tsBuildInfoFile": "./.tsbuildinfo"
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "next-env.d.ts"],
+  "exclude": ["node_modules"]
+}

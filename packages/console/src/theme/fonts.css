@@ -1,0 +1,13 @@
+/* Google Fonts loaded via next/font in layout.tsx set these CSS variables:
+   --font-titillium   (Titillium Web — body)
+   --font-source-code (Source Code Pro — code)
+   --font-jetbrains   (JetBrains Mono — terminal/display)
+   --font-rigid-square (Rigid Square — headings, placeholder: Inter)
+*/
+
+@theme inline {
+  --font-sans: var(--font-titillium);
+  --font-heading: var(--font-rigid-square);
+  --font-mono: var(--font-source-code);
+  --font-display: var(--font-jetbrains);
+}

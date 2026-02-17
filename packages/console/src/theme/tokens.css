@@ -1,0 +1,200 @@
+/* ===== THEME TOKENS ===== */
+/* All themes define these variables. Components use var(--token-name) only. */
+/* Derived tokens (--accent-glow-*, --foreground-dot, etc.) are pre-resolved  */
+/* per theme for browser compatibility — no relative color syntax needed.     */
+
+/* --- Dark (default) --- */
+:root,
+.theme-dark {
+  --background: oklch(0.198 0.026 283.78);
+  --foreground: oklch(0.974 0.015 306.42);
+  --accent: oklch(0.936 0.225 121.24);
+  --accent-foreground: oklch(0.198 0.026 283.78);
+  --primary: oklch(0.55 0.249 285.60);
+  --primary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.3 0.03 284);
+  --muted-foreground: oklch(0.65 0.02 285);
+  --card: oklch(0.25 0.03 284);
+  --card-foreground: oklch(0.974 0.015 306.42);
+  --border: oklch(1 0 0 / 8%);
+  --border-hover: oklch(0.936 0.225 121.24 / 30%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.55 0.249 285.60);
+  --success: oklch(0.72 0.19 145);
+  --warning: oklch(0.78 0.16 75);
+  --error: oklch(0.6 0.22 15);
+
+  /* Derived: accent at various opacities */
+  --accent-glow: oklch(0.936 0.225 121.24 / 15%);
+  --accent-glow-intense: oklch(0.936 0.225 121.24 / 30%);
+  --accent-glow-inset: oklch(0.936 0.225 121.24 / 5%);
+  --accent-glow-line: oklch(0.936 0.225 121.24 / 30%);
+  --accent-hover-shadow: oklch(0.936 0.225 121.24 / 10%);
+  --accent-scan: oklch(0.936 0.225 121.24 / 4%);
+  --accent-scan-subtle: oklch(0.936 0.225 121.24 / 3%);
+
+  /* Derived: foreground at various opacities */
+  --foreground-dot: oklch(0.974 0.015 306.42 / 7%);
+  --foreground-scanline: oklch(0.974 0.015 306.42 / 2%);
+
+  /* Gradients */
+  --gradient-main: linear-gradient(90deg, oklch(0.198 0.026 283.78), oklch(0.55 0.249 285.60));
+  --gradient-accent: linear-gradient(90deg, oklch(0.936 0.225 121.24), oklch(0.72 0.19 145));
+}
+
+/* --- Light --- */
+.theme-light {
+  --background: oklch(0.974 0.015 306.42);
+  --foreground: oklch(0.198 0.026 283.78);
+  --accent: oklch(0.45 0.23 290);
+  --accent-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.428 0.249 285.60);
+  --primary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.95 0.01 306);
+  --muted-foreground: oklch(0.5 0.02 285);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.198 0.026 283.78);
+  --border: oklch(0 0 0 / 10%);
+  --border-hover: oklch(0.45 0.23 290 / 40%);
+  --input: oklch(0 0 0 / 10%);
+  --ring: oklch(0.428 0.249 285.60);
+  --success: oklch(0.55 0.19 145);
+  --warning: oklch(0.6 0.16 75);
+  --error: oklch(0.5 0.22 15);
+
+  --accent-glow: oklch(0.45 0.23 290 / 10%);
+  --accent-glow-intense: oklch(0.45 0.23 290 / 20%);
+  --accent-glow-inset: oklch(0.45 0.23 290 / 3%);
+  --accent-glow-line: oklch(0.45 0.23 290 / 30%);
+  --accent-hover-shadow: oklch(0.45 0.23 290 / 10%);
+  --accent-scan: oklch(0.45 0.23 290 / 4%);
+  --accent-scan-subtle: oklch(0.45 0.23 290 / 3%);
+
+  --foreground-dot: oklch(0.198 0.026 283.78 / 10%);
+  --foreground-scanline: oklch(0.198 0.026 283.78 / 4%);
+
+  --gradient-main: linear-gradient(90deg, oklch(0.974 0.015 306.42), oklch(0.428 0.249 285.60));
+  --gradient-accent: linear-gradient(90deg, oklch(0.45 0.23 290), oklch(0.428 0.249 285.60));
+}
+
+/* --- Contrast (high visibility) --- */
+.theme-contrast {
+  --background: oklch(0 0 0);
+  --foreground: oklch(1 0 0);
+  --accent: oklch(0.936 0.225 121.24);
+  --accent-foreground: oklch(0 0 0);
+  --primary: oklch(0.7 0.2 285.60);
+  --primary-foreground: oklch(0 0 0);
+  --muted: oklch(0.15 0 0);
+  --muted-foreground: oklch(0.8 0 0);
+  --card: oklch(0.1 0 0);
+  --card-foreground: oklch(1 0 0);
+  --border: oklch(1 0 0 / 20%);
+  --border-hover: oklch(0.936 0.225 121.24 / 50%);
+  --input: oklch(1 0 0 / 20%);
+  --ring: oklch(0.936 0.225 121.24);
+  --success: oklch(0.8 0.2 145);
+  --warning: oklch(0.85 0.18 75);
+  --error: oklch(0.7 0.25 15);
+
+  --accent-glow: oklch(0.936 0.225 121.24 / 25%);
+  --accent-glow-intense: oklch(0.936 0.225 121.24 / 40%);
+  --accent-glow-inset: oklch(0.936 0.225 121.24 / 8%);
+  --accent-glow-line: oklch(0.936 0.225 121.24 / 40%);
+  --accent-hover-shadow: oklch(0.936 0.225 121.24 / 15%);
+  --accent-scan: oklch(0.936 0.225 121.24 / 5%);
+  --accent-scan-subtle: oklch(0.936 0.225 121.24 / 4%);
+
+  --foreground-dot: oklch(1 0 0 / 12%);
+  --foreground-scanline: oklch(1 0 0 / 3%);
+
+  --gradient-main: linear-gradient(90deg, oklch(0 0 0), oklch(0.7 0.2 285.60));
+  --gradient-accent: linear-gradient(90deg, oklch(0.936 0.225 121.24), oklch(0.8 0.2 145));
+}
+
+/* --- Warm (amber CRT) --- */
+.theme-warm {
+  --background: oklch(0.2 0.03 60);
+  --foreground: oklch(0.92 0.04 80);
+  --accent: oklch(0.82 0.18 75);
+  --accent-foreground: oklch(0.15 0.03 60);
+  --primary: oklch(0.55 0.15 40);
+  --primary-foreground: oklch(0.92 0.04 80);
+  --muted: oklch(0.28 0.03 60);
+  --muted-foreground: oklch(0.6 0.04 70);
+  --card: oklch(0.24 0.03 60);
+  --card-foreground: oklch(0.92 0.04 80);
+  --border: oklch(0.92 0.04 80 / 8%);
+  --border-hover: oklch(0.82 0.18 75 / 30%);
+  --input: oklch(0.92 0.04 80 / 15%);
+  --ring: oklch(0.82 0.18 75);
+  --success: oklch(0.72 0.15 145);
+  --warning: oklch(0.82 0.18 75);
+  --error: oklch(0.6 0.22 15);
+
+  --accent-glow: oklch(0.82 0.18 75 / 15%);
+  --accent-glow-intense: oklch(0.82 0.18 75 / 30%);
+  --accent-glow-inset: oklch(0.82 0.18 75 / 5%);
+  --accent-glow-line: oklch(0.82 0.18 75 / 30%);
+  --accent-hover-shadow: oklch(0.82 0.18 75 / 10%);
+  --accent-scan: oklch(0.82 0.18 75 / 4%);
+  --accent-scan-subtle: oklch(0.82 0.18 75 / 3%);
+
+  --foreground-dot: oklch(0.92 0.04 80 / 8%);
+  --foreground-scanline: oklch(0.92 0.04 80 / 3%);
+
+  --gradient-main: linear-gradient(90deg, oklch(0.2 0.03 60), oklch(0.55 0.15 40));
+  --gradient-accent: linear-gradient(90deg, oklch(0.82 0.18 75), oklch(0.72 0.15 145));
+}
+
+/* --- Cool (sci-fi cyan) --- */
+.theme-cool {
+  --background: oklch(0.18 0.03 250);
+  --foreground: oklch(0.92 0.03 220);
+  --accent: oklch(0.82 0.15 200);
+  --accent-foreground: oklch(0.15 0.03 250);
+  --primary: oklch(0.5 0.2 260);
+  --primary-foreground: oklch(0.92 0.03 220);
+  --muted: oklch(0.25 0.03 250);
+  --muted-foreground: oklch(0.6 0.03 230);
+  --card: oklch(0.22 0.03 250);
+  --card-foreground: oklch(0.92 0.03 220);
+  --border: oklch(0.92 0.03 220 / 8%);
+  --border-hover: oklch(0.82 0.15 200 / 30%);
+  --input: oklch(0.92 0.03 220 / 15%);
+  --ring: oklch(0.82 0.15 200);
+  --success: oklch(0.72 0.19 145);
+  --warning: oklch(0.78 0.16 75);
+  --error: oklch(0.6 0.22 15);
+
+  --accent-glow: oklch(0.82 0.15 200 / 18%);
+  --accent-glow-intense: oklch(0.82 0.15 200 / 35%);
+  --accent-glow-inset: oklch(0.82 0.15 200 / 6%);
+  --accent-glow-line: oklch(0.82 0.15 200 / 30%);
+  --accent-hover-shadow: oklch(0.82 0.15 200 / 10%);
+  --accent-scan: oklch(0.82 0.15 200 / 4%);
+  --accent-scan-subtle: oklch(0.82 0.15 200 / 3%);
+
+  --foreground-dot: oklch(0.92 0.03 220 / 7%);
+  --foreground-scanline: oklch(0.92 0.03 220 / 2%);
+
+  --gradient-main: linear-gradient(90deg, oklch(0.18 0.03 250), oklch(0.5 0.2 260));
+  --gradient-accent: linear-gradient(90deg, oklch(0.82 0.15 200), oklch(0.72 0.19 145));
+}
+
+/* --- Shiki syntax highlighting token mapping --- */
+/* Maps Shiki CSS-variables theme to design system tokens. */
+/* Inherits theme automatically via the cascade.           */
+:root {
+  --shiki-foreground: var(--foreground);
+  --shiki-background: var(--card);
+  --shiki-token-constant: var(--accent);
+  --shiki-token-string: var(--success);
+  --shiki-token-comment: var(--muted-foreground);
+  --shiki-token-keyword: var(--primary);
+  --shiki-token-parameter: var(--foreground);
+  --shiki-token-function: var(--accent);
+  --shiki-token-string-expression: var(--success);
+  --shiki-token-punctuation: var(--muted-foreground);
+  --shiki-token-link: var(--accent);
+}

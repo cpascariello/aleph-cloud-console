@@ -1,0 +1,96 @@
+@layer utilities {
+  .terminal-grid {
+    background-image: radial-gradient(circle, var(--foreground-dot) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .terminal-scanlines {
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      var(--foreground-scanline) 3px,
+      var(--foreground-scanline) 4px
+    );
+  }
+
+  .terminal-glow-border {
+    box-shadow:
+      0 -1px 0 0 var(--accent-glow),
+      0 1px 0 0 var(--accent-glow);
+  }
+
+  .terminal-glow-border-intense {
+    box-shadow:
+      0 -1px 0 0 var(--accent-glow-intense),
+      0 1px 0 0 var(--accent-glow-intense),
+      inset 0 1px 20px var(--accent-glow-inset);
+  }
+
+  .animate-reveal {
+    animation: reveal-up 0.4s ease-out both;
+  }
+
+  .animate-glitch-in {
+    animation: glitch-in 0.15s ease-out both;
+  }
+
+  .pulse-ring {
+    position: relative;
+  }
+
+  .pulse-ring::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 2px solid var(--accent);
+    animation: pulse-ring 1.5s ease-out infinite;
+    pointer-events: none;
+  }
+
+  @supports (animation-timeline: view()) {
+    .scroll-fade-in {
+      animation: scroll-fade-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+
+  .scroll-fade-in-up {
+    --fade-distance: 20px;
+  }
+
+  .scroll-fade-in-down {
+    --fade-distance: -20px;
+  }
+
+  .scroll-fade-in-left {
+    --fade-translate-x: 20px;
+  }
+
+  .scroll-fade-in-right {
+    --fade-translate-x: -20px;
+  }
+
+  .scroll-progress {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      animation: scroll-progress-fill linear both;
+      animation-timeline: scroll();
+    }
+  }
+
+  .code-line-numbers code {
+    counter-reset: line;
+  }
+  .code-line-numbers .line::before {
+    counter-increment: line;
+    content: counter(line);
+    @apply mr-4 inline-block w-4 text-right text-muted-foreground/40;
+  }
+}
