@@ -212,3 +212,7 @@ packages/
 - Wizard shell: useWizard hook with step state, validation, localStorage auto-save, progress bar, back/next footer
 - Instance creation wizard: 5 steps (template, configure, access, networking, review) + deploy progress terminal
 - Volume creation wizard (2 steps), Domain creation wizard (2 steps), Website creation wizard (3 steps)
+- Instance detail page: 4-tab layout (overview specs, logs terminal, networking/volumes, settings/danger zone) with start/stop/reboot/delete actions
+- Volume detail page: size, dates, delete with high-risk confirmation
+- Domain detail page: DNS configuration code block, linked resource info, delete
+- Website detail page: framework display, endpoint URL, delete

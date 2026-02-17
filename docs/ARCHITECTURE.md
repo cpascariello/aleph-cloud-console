@@ -71,6 +71,12 @@ aleph-cloud-console/          # Monorepo root
 **Key files:** `packages/console/src/hooks/use-resource-list.ts`, `packages/console/src/components/resources/`
 **Notes:** Shared presentational components (`ResourceFilterBar`, `ResourcePagination`, `ResourceEmptyState`, `BulkActionBar`, `DeleteConfirmationModal`) compose with the hook. Each page maps its entity data to `RowShape` objects for `DataTable`.
 
+### Resource Detail Page Pattern
+**Context:** All resource types need detail views with consistent structure: back link, header with status/actions, tabbed content, delete confirmation.
+**Approach:** Each detail page uses `use(params)` to unwrap Next.js 16 async params. Shared layout: back link → header (icon, name, StatusDot, Badge, CopyButton for ID) → `TerminalTabs` with Overview + Settings tabs. Settings tab always contains a danger zone with `DeleteConfirmationModal`. Instance detail has 4 tabs (overview, logs, networking, settings) with extracted tab components. Simpler resources inline their tab content.
+**Key files:** `packages/console/src/app/(console)/compute/[id]/page.tsx`, `packages/console/src/components/compute/detail/`, `packages/console/src/app/(console)/infrastructure/*/[id]/page.tsx`
+**Notes:** Volume delete uses `highRisk` prop on `DeleteConfirmationModal` for type-to-confirm. Instance actions (start/stop/reboot) use `useInstanceActions` mutation hook.
+
 ### Tailwind CSS 4 + Webpack PostCSS
 **Context:** Next.js 16 webpack mode with pnpm monorepo. Tailwind CSS 4 uses `@tailwindcss/postcss` plugin.
 **Approach:** `postcss` must be an explicit devDependency (pnpm doesn't hoist transitive deps). Config must be `.cjs` format (`postcss.config.cjs`) to avoid ESM resolution issues with webpack's postcss-loader. The `@source` directive in `globals.css` tells Tailwind to scan data-terminal source files for utility classes.
