@@ -144,3 +144,10 @@ export type {
   AddForwardedPorts,
   ForwardedPorts,
 } from '@/types/forwarded-ports'
+
+export type {
+  Eip155Provider,
+  SolanaWalletProvider,
+  MultiChainProvider,
+} from '@/types/provider'
+export { isEip155Provider, isSolanaProvider } from '@/types/provider'
