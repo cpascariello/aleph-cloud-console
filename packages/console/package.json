@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "bash -c 'out=$(tsc --noEmit 2>&1); console_errors=$(echo \"$out\" | grep \"error TS\" | grep -v \"../data-terminal/\"); if [ -n \"$console_errors\" ]; then echo \"$out\"; exit 1; fi'",
-    "lint": "oxlint src/"
+    "lint": "oxlint src/",
+    "test": "vitest run"
   },
   "dependencies": {
     "@aleph-sdk/account": "1.2.0",
