@@ -107,9 +107,38 @@ function resolveBlockchainId(
   return chainIdToBlockchain[chainId]?.id
 }
 
+// --- Disconnected fallback (no project ID) ---
+
+const noopAsync = async () => {}
+const noop = () => {}
+
+const disconnectedState: WalletState = {
+  isConnected: false,
+  address: undefined,
+  chainId: undefined,
+  blockchainId: undefined,
+  openModal: noop,
+  disconnect: noopAsync,
+  switchNetwork: noopAsync,
+  getAlephAccount: async () => undefined,
+}
+
 // --- Provider component ---
 
+/**
+ * When AppKit is not initialized (no project ID), render a provider
+ * with disconnected state. AppKit hooks can only be called after
+ * createAppKit, so the active provider is a separate component.
+ */
 export function WalletProvider({ children }: { children: ReactNode }) {
+  if (!projectId) {
+    return <WalletContext value={disconnectedState}>{children}</WalletContext>
+  }
+
+  return <AppKitWalletProvider>{children}</AppKitWalletProvider>
+}
+
+function AppKitWalletProvider({ children }: { children: ReactNode }) {
   const appKit = useAppKit()
   const { address, isConnected } = useAppKitAccount()
   const { chainId, switchNetwork: reownSwitchNetwork } = useAppKitNetwork()
