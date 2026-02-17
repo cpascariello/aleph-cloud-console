@@ -18,6 +18,12 @@ Each entry includes:
 
 ---
 
+## Decision #8 - 2026-02-17
+**Context:** Tailwind CSS 4 produced zero styling in the browser — all directives (`@import "tailwindcss"`, `@source`, `@theme inline`, `@apply`) passed through raw and unprocessed.
+**Decision:** Add `postcss` as an explicit devDependency and use `postcss.config.cjs` (CommonJS) instead of `.mjs`.
+**Rationale:** pnpm's strict `node_modules` doesn't hoist transitive dependencies. `postcss` was only a transitive dep of `@tailwindcss/postcss`, so webpack's postcss-loader couldn't find it. The `.mjs` config format also caused ESM resolution issues with webpack's postcss-loader. Both failures were silent — no error, just unprocessed CSS.
+**Alternatives considered:** Switching to Turbopack (rejected: need webpack for ContextualAliasPlugin that resolves `@/` imports differently for data-terminal vs console). Inlining all theme CSS into globals.css (rejected: worse maintainability).
+
 ## Decision #7 - 2026-02-17
 **Context:** Sidebar navigation structure for the console
 **Decision:** Flatten compute types into tabs within a single Compute page. Merge Storage + Networking into "Infrastructure" group. Move SSH Keys into Compute group.

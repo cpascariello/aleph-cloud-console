@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../../../data-terminal/src";
 @import "../theme/tokens.css";
 @import "../theme/animations.css";
 @import "../theme/utilities.css";

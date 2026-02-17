@@ -65,6 +65,18 @@ aleph-cloud-console/          # Monorepo root
 **Approach:** Components imported via path aliases (`@dt/atoms`, `@dt/molecules`) or barrel re-export. Console uses data-terminal as source (transpiled by Next.js), not as a published package.
 **Key files:** `packages/console/src/components/data-terminal.ts` (barrel), `~/repos/data-terminal/src/`
 
+### Resource List Pattern
+**Context:** All resource list pages (compute, volumes, domains, websites, SSH keys) share the same interaction model: search, filter, sort, paginate, select, bulk actions.
+**Approach:** `useResourceList<T>` generic hook manages all list state via URL search params. Each page provides `getId`, `searchFn`, `filterFn`, and `sortFn` callbacks. Pagination is fixed at 25 items. Selection state is local (not URL).
+**Key files:** `packages/console/src/hooks/use-resource-list.ts`, `packages/console/src/components/resources/`
+**Notes:** Shared presentational components (`ResourceFilterBar`, `ResourcePagination`, `ResourceEmptyState`, `BulkActionBar`, `DeleteConfirmationModal`) compose with the hook. Each page maps its entity data to `RowShape` objects for `DataTable`.
+
+### Tailwind CSS 4 + Webpack PostCSS
+**Context:** Next.js 16 webpack mode with pnpm monorepo. Tailwind CSS 4 uses `@tailwindcss/postcss` plugin.
+**Approach:** `postcss` must be an explicit devDependency (pnpm doesn't hoist transitive deps). Config must be `.cjs` format (`postcss.config.cjs`) to avoid ESM resolution issues with webpack's postcss-loader. The `@source` directive in `globals.css` tells Tailwind to scan data-terminal source files for utility classes.
+**Key files:** `packages/console/postcss.config.cjs`, `packages/console/src/app/globals.css`
+**Notes:** Without explicit `postcss`, the PostCSS pipeline silently skips processing — all Tailwind directives pass through raw to the browser with no error.
+
 ---
 
 ## Recipes

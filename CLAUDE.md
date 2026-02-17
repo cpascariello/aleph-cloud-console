@@ -202,4 +202,10 @@ packages/
 ### Current Features
 
 <!-- Update this list as features are added -->
-- Project scaffolded with plans and docs
+- App shell: sidebar, navbar, command palette, error boundary, theme/toast providers
+- SDK: entity managers, types, Zod schemas, React Query hooks, mutation hooks
+- Dashboard: stat cards (6 entity counts), resource health table, quick actions, getting started checklist
+- Compute page: tabbed list (Instances, GPU, Confidential, Functions) with search, sort, pagination, delete
+- Infrastructure pages: Volumes (type filter), Domains, Websites (framework filter) — all with search, pagination, delete
+- SSH Keys page: list with add key modal and inline delete
+- Shared resource components: filter bar, pagination, empty state, bulk action bar, delete confirmation modal
