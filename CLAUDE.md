@@ -209,3 +209,6 @@ packages/
 - Infrastructure pages: Volumes (type filter), Domains, Websites (framework filter) — all with search, pagination, delete
 - SSH Keys page: list with add key modal and inline delete
 - Shared resource components: filter bar, pagination, empty state, bulk action bar, delete confirmation modal
+- Wizard shell: useWizard hook with step state, validation, localStorage auto-save, progress bar, back/next footer
+- Instance creation wizard: 5 steps (template, configure, access, networking, review) + deploy progress terminal
+- Volume creation wizard (2 steps), Domain creation wizard (2 steps), Website creation wizard (3 steps)
