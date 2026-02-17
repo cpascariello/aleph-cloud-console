@@ -11,7 +11,16 @@
     "lint": "oxlint src/"
   },
   "dependencies": {
+    "@aleph-sdk/account": "1.2.0",
+    "@aleph-sdk/avalanche": "1.5.0",
+    "@aleph-sdk/base": "1.5.0",
+    "@aleph-sdk/ethereum": "1.5.0",
+    "@aleph-sdk/solana": "1.6.2",
+    "@aleph-sdk/superfluid": "1.4.5",
     "@hookform/resolvers": "5.0.1",
+    "@reown/appkit": "^1.8.18",
+    "@reown/appkit-adapter-ethers5": "^1.8.18",
+    "@reown/appkit-adapter-solana": "^1.8.18",
     "@tanstack/react-query": "5.80.7",
     "aleph-sdk": "workspace:*",
     "clsx": "2.1.1",
