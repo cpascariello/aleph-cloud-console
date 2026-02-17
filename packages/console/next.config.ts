@@ -77,6 +77,18 @@ const nextConfig: NextConfig = {
       ...(config.resolve.plugins ?? []),
       new ContextualAliasPlugin(),
     ];
+
+    // @aleph-sdk/message transitively imports `ws` which requires Node.js
+    // built-ins. These are unavailable in the browser bundle, so stub them.
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
+      os: false,
+      path: false,
+    };
+
     return config;
   },
 };
