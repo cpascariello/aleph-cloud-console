@@ -1,0 +1,89 @@
+# Architecture
+
+Technical patterns and decisions.
+
+---
+
+## Stack
+
+| Layer | Technology |
+|-------|------------|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript 5.9 (strict) |
+| Styling | Tailwind CSS 4 + data-terminal design system |
+| State (server) | TanStack React Query |
+| State (forms) | React Hook Form + Zod |
+| State (wallet) | Reown SDK |
+| Icons | Lucide React |
+| Testing | Vitest |
+
+---
+
+## Project Structure
+
+```
+aleph-cloud-console/          # Monorepo root
+  packages/
+    aleph-sdk/                # Domain logic (framework-agnostic)
+      src/
+        managers/             # Entity managers (InstanceManager, VolumeManager, etc.)
+        types/                # Entity types, enums
+        schemas/              # Zod validation schemas
+        constants.ts          # API URLs, channels, blockchain addresses
+    console/                  # Next.js 16 app
+      src/
+        app/(console)/        # Console layout group
+        components/           # UI components
+        hooks/                # React Query hooks, mutations, utility hooks
+        providers/            # Context providers
+        lib/                  # Utilities
+```
+
+---
+
+## Patterns
+
+### Entity Manager Pattern (SDK)
+**Context:** All Aleph network resources follow the same CRUD + multi-step signing pattern.
+**Approach:** Each resource type has a manager class implementing `EntityManager<T, AT>` with `getAll`, `get`, `add`, `del`, and async generator variants (`addSteps`, `delSteps`) that yield at each wallet signature step.
+**Key files:** `packages/aleph-sdk/src/managers/`
+**Notes:** Managers are framework-agnostic. The React layer wraps them in React Query hooks.
+
+### React Query for Server State
+**Context:** All console state comes from the Aleph network (server state). Need caching, background refetching, optimistic updates.
+**Approach:** One `useQuery` hook per entity type, one `useMutation` per action. Cascade invalidation via `queryClient.invalidateQueries()`.
+**Key files:** `packages/console/src/hooks/queries/`, `packages/console/src/hooks/mutations/`
+**Notes:** No Redux or global store. URL params for UI state (filters, pagination).
+
+### Wizard Pattern
+**Context:** Resource creation involves multi-step forms with validation, cost estimation, and blockchain signing.
+**Approach:** Shared `useWizard` hook manages step state, per-step validation, and localStorage draft auto-save. Each resource type defines its own steps.
+**Key files:** `packages/console/src/components/wizard/`, `packages/console/src/hooks/use-wizard.ts`
+
+### Design System Integration
+**Context:** data-terminal provides 24 atoms + 31 molecules with a cyberpunk/terminal aesthetic.
+**Approach:** Components imported via path aliases (`@dt/atoms`, `@dt/molecules`) or barrel re-export. Console uses data-terminal as source (transpiled by Next.js), not as a published package.
+**Key files:** `packages/console/src/components/data-terminal.ts` (barrel), `~/repos/data-terminal/src/`
+
+---
+
+## Recipes
+
+### Adding a New Resource Type
+
+1. Define types in `packages/aleph-sdk/src/types/[resource].ts`
+2. Create Zod schema in `packages/aleph-sdk/src/schemas/[resource].ts`
+3. Create manager in `packages/aleph-sdk/src/managers/[resource].ts`
+4. Add to factory in `packages/aleph-sdk/src/managers/factory.ts`
+5. Create query hook in `packages/console/src/hooks/queries/use-[resource]s.ts`
+6. Create mutation hooks in `packages/console/src/hooks/mutations/use-[resource]-actions.ts`
+7. Create list page at `packages/console/src/app/(console)/[section]/[resource]s/page.tsx`
+8. Create detail page at `packages/console/src/app/(console)/[section]/[resource]s/[id]/page.tsx`
+9. Create wizard at `packages/console/src/app/(console)/[section]/[resource]s/new/page.tsx`
+10. Add to sidebar config in `packages/console/src/components/shell/sidebar-config.ts`
+
+### Adding a New Wizard Step
+
+1. Create step component in the resource's `wizard/` directory
+2. Add to the page's steps array with label and validation schema
+3. The `useWizard` hook handles navigation, validation, and auto-save automatically
