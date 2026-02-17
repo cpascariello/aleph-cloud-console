@@ -1,0 +1,28 @@
+import { useQuery } from '@tanstack/react-query'
+import { useManagers } from '@/hooks/use-managers'
+import type { Website } from 'aleph-sdk'
+
+export const websiteKeys = {
+  all: ['websites'] as const,
+  detail: (id: string) => ['websites', id] as const,
+}
+
+export function useWebsites() {
+  const { websiteManager } = useManagers()
+
+  return useQuery<Website[]>({
+    queryKey: websiteKeys.all,
+    queryFn: () => websiteManager.getAll(),
+    refetchInterval: 30_000,
+  })
+}
+
+export function useWebsite(id: string) {
+  const { websiteManager } = useManagers()
+
+  return useQuery<Website | undefined>({
+    queryKey: websiteKeys.detail(id),
+    queryFn: () => websiteManager.get(id),
+    enabled: Boolean(id),
+  })
+}

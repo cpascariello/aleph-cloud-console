@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./src/*", "../aleph-sdk/src/*"],
       "@dt/atoms": ["../data-terminal/src/atoms"],
       "@dt/molecules": ["../data-terminal/src/molecules"],
       "@dt/hooks/*": ["../data-terminal/src/hooks/*"],
@@ -13,7 +13,7 @@
       "@/molecules/*": ["../data-terminal/src/molecules/*"],
       "@/hooks/*": ["./src/hooks/*", "../data-terminal/src/hooks/*"],
       "@/lib/*": ["./src/lib/*", "../data-terminal/src/lib/*"],
-      "@/types/*": ["./src/types/*", "../data-terminal/src/types/*"]
+      "@/types/*": ["./src/types/*", "../data-terminal/src/types/*", "../aleph-sdk/src/types/*"]
     },
     "plugins": [{ "name": "next" }],
     "incremental": true,
