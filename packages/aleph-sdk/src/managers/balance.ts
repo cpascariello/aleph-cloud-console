@@ -1,5 +1,3 @@
-import { PaymentMethod } from '@/constants'
-
 export class BalanceManager {
   constructor(private apiServer: string) {}
 
@@ -23,22 +21,5 @@ export class BalanceManager {
 
     const data: { balance: number } = await response.json()
     return data.balance
-  }
-
-  /**
-   * Fetch ALEPH balance for the given payment method.
-   * Hold: uses pyaleph API (all chains).
-   * Stream: requires Superfluid account, handled at app
-   * layer for now.
-   */
-  async getBalance(
-    address: string,
-    paymentMethod: PaymentMethod,
-  ): Promise<number> {
-    if (paymentMethod === PaymentMethod.Stream) {
-      return this.getHoldBalance(address)
-    }
-
-    return this.getHoldBalance(address)
   }
 }

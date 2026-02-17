@@ -4,14 +4,6 @@ export type { Account } from '@aleph-sdk/account'
 // Types
 export * from '@/types/index'
 
-// Provider type guards
-export type {
-  Eip155Provider,
-  SolanaWalletProvider,
-  MultiChainProvider,
-} from '@/types/provider'
-export { isEip155Provider, isSolanaProvider } from '@/types/provider'
-
 // Constants
 export {
   DEFAULT_API_SERVER,

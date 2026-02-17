@@ -93,18 +93,15 @@ export function computeCostLines(
 export function useCostEstimate(params: CostEstimateParams) {
   const { data: pricing, isLoading, error } = usePricing()
 
+  // Destructure for stable dependency tracking; pass original params
+  // to computeCostLines to preserve exactOptionalPropertyTypes.
+  const { type, paymentMethod, vcpus, memory, storage, gpuModel } = params
+
   const costSummary = useMemo(() => {
     if (!pricing) return undefined
     return computeCostLines({ ...params, pricing })
-  }, [
-    pricing,
-    params.type,
-    params.paymentMethod,
-    params.vcpus,
-    params.memory,
-    params.storage,
-    params.gpuModel,
-  ])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- deps mirror params fields
+  }, [pricing, type, paymentMethod, vcpus, memory, storage, gpuModel])
 
   return { costSummary, isLoading, error }
 }

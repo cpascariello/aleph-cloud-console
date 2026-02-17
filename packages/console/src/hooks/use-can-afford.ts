@@ -1,8 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useManagers } from '@/hooks/use-managers'
 import { useWallet } from '@/providers/wallet-provider'
-import { PaymentMethod } from 'aleph-sdk'
-
 export type AffordabilityResult = {
   canAfford: boolean
   balance: number
@@ -34,7 +32,6 @@ export const balanceKeys = {
 
 export function useCanAfford(params: {
   cost: number | undefined
-  paymentMethod: PaymentMethod
 }) {
   const { address, isConnected } = useWallet()
   const { balanceManager } = useManagers()

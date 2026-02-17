@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { BalanceManager } from './balance'
-import { PaymentMethod } from '@/constants'
 
 describe('BalanceManager', () => {
   let manager: BalanceManager
@@ -43,21 +42,6 @@ describe('BalanceManager', () => {
       await expect(
         manager.getHoldBalance('0xabc'),
       ).rejects.toThrow()
-    })
-  })
-
-  describe('getBalance', () => {
-    it('delegates to getHoldBalance for Hold payment', async () => {
-      vi.spyOn(manager, 'getHoldBalance').mockResolvedValueOnce(
-        1000,
-      )
-
-      const balance = await manager.getBalance(
-        '0xabc',
-        PaymentMethod.Hold,
-      )
-      expect(balance).toBe(1000)
-      expect(manager.getHoldBalance).toHaveBeenCalledWith('0xabc')
     })
   })
 })

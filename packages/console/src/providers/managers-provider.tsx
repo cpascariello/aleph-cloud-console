@@ -24,9 +24,13 @@ export function ManagersProvider({ children }: { children: ReactNode }) {
     }
 
     let cancelled = false
-    getAlephAccount().then((acc) => {
-      if (!cancelled) setAccount(acc)
-    })
+    getAlephAccount()
+      .then((acc) => {
+        if (!cancelled) setAccount(acc)
+      })
+      .catch((err: unknown) => {
+        console.error('Failed to resolve Aleph account:', err)
+      })
 
     return () => {
       cancelled = true

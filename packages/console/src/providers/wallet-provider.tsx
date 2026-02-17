@@ -84,6 +84,9 @@ if (projectId) {
 
 // --- Chain ID mapping ---
 
+// Solana mainnet genesis hash — Reown may return this as the chain ID
+const SOLANA_MAINNET_GENESIS = '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp'
+
 function resolveBlockchainId(
   chainId: number | string | undefined,
 ): BlockchainId | undefined {
@@ -92,7 +95,7 @@ function resolveBlockchainId(
   if (typeof chainId === 'string') {
     if (
       chainId.toLowerCase().includes('solana') ||
-      chainId === '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp'
+      chainId === SOLANA_MAINNET_GENESIS
     ) {
       return BlockchainId.SOL
     }
@@ -125,6 +128,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       blockchainId === BlockchainId.SOL ? solanaProvider : eip155Provider
     if (!provider) return undefined
 
+    // Cast to `never` because @aleph-sdk chain packages expect their own
+    // provider types, but Reown gives us generic EIP-1193/Solana objects.
+    // The type guards above ensure runtime safety.
     switch (blockchainId) {
       case BlockchainId.ETH: {
         if (!isEip155Provider(provider)) return undefined
@@ -149,6 +155,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   const handleSwitchNetwork = useCallback(
     async (targetChainId: number) => {
+      // 900 is the Aleph SDK convention for Solana (not a standard EVM chain ID)
       const networkMap: Record<number, AppKitNetwork> = {
         1: mainnet,
         43114: avalanche,

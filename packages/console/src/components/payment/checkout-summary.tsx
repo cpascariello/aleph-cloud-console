@@ -26,10 +26,7 @@ export function CheckoutSummary({
     useCostEstimate(costParams)
 
   const { canAfford, balance, required, isLoading: balanceLoading } =
-    useCanAfford({
-      cost: costSummary?.cost,
-      paymentMethod: costParams.paymentMethod,
-    })
+    useCanAfford({ cost: costSummary?.cost })
 
   return (
     <div className={className}>
