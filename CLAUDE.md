@@ -216,3 +216,7 @@ packages/
 - Volume detail page: size, dates, delete with high-risk confirmation
 - Domain detail page: DNS configuration code block, linked resource info, delete
 - Website detail page: framework display, endpoint URL, delete
+- Wallet connection: Reown AppKit integration, multi-chain support (ETH, AVAX, BASE, SOL), navbar wallet button with chain badge, provider type guards
+- Payment components: payment method toggle (Hold/Stream), cost breakdown with line items, insufficient funds alert, checkout summary composite for wizard footers
+- Payment hooks: usePricing (cached pricing aggregate), useCostEstimate (reactive cost computation), useCanAfford (balance check with React Query)
+- SDK additions: BalanceManager (pyaleph API balance fetching), provider type guards (isEip155Provider, isSolanaProvider)

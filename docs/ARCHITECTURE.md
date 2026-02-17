@@ -65,6 +65,18 @@ aleph-cloud-console/          # Monorepo root
 **Approach:** Components imported via path aliases (`@dt/atoms`, `@dt/molecules`) or barrel re-export. Console uses data-terminal as source (transpiled by Next.js), not as a published package.
 **Key files:** `packages/console/src/components/data-terminal.ts` (barrel), `~/repos/data-terminal/src/`
 
+### Wallet Connection Pattern
+**Context:** Users connect wallets to sign transactions and pay for resources. Support 4 chains: ETH, AVAX, BASE, SOL.
+**Approach:** Reown AppKit initialized at module scope (SSR-safe). `WalletProvider` wraps the app and exposes `WalletState` via React context. `ManagersProvider` consumes `useWallet()` internally to resolve Aleph Account. Provider type guards (`isEip155Provider`, `isSolanaProvider`) distinguish EVM vs Solana wallets.
+**Provider order:** `QueryProvider > WalletProvider > ManagersProvider > ThemeProvider > ToastProvider`
+**Key files:** `packages/console/src/providers/wallet-provider.tsx`, `packages/console/src/providers/managers-provider.tsx`, `packages/aleph-sdk/src/types/provider.ts`
+
+### Payment & Cost Estimation Pattern
+**Context:** Resource creation wizards need to show costs and check if the user can afford them before deploying.
+**Approach:** Two-layer system. SDK layer: `BalanceManager` fetches ALEPH balance from pyaleph API (all chains), `CostManager` provides pricing aggregates. React layer: `useCostEstimate` computes costs from pricing + form params, `useCanAfford` checks balance vs cost. UI layer: `CheckoutSummary` composite component composes PaymentMethodToggle + CostBreakdown + InsufficientFundsAlert. Pure computation functions exported for testing.
+**Key files:** `packages/aleph-sdk/src/managers/balance.ts`, `packages/console/src/hooks/use-cost-estimate.ts`, `packages/console/src/hooks/use-can-afford.ts`, `packages/console/src/components/payment/checkout-summary.tsx`
+**Data flow:** `useWizard form state -> CheckoutSummary -> useCostEstimate(form values) -> CostManager -> CostSummary` and `useCanAfford(cost, paymentMethod) -> BalanceManager -> canAfford`
+
 ### Resource List Pattern
 **Context:** All resource list pages (compute, volumes, domains, websites, SSH keys) share the same interaction model: search, filter, sort, paginate, select, bulk actions.
 **Approach:** `useResourceList<T>` generic hook manages all list state via URL search params. Each page provides `getId`, `searchFn`, `filterFn`, and `sortFn` callbacks. Pagination is fixed at 25 items. Selection state is local (not URL).
