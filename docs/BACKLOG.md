@@ -30,6 +30,16 @@ Ideas and scope creep captured for later consideration.
 **Description:** Historical cost tracking, spend trends, cost forecasting. The billing page currently only shows current state. Time-series data would help users optimize spending.
 **Priority:** Medium
 
+### 2026-02-17 - Migrate webpack ContextualAliasPlugin to Turbopack
+**Source:** Identified during Phase 6 — slow dev compilation
+**Description:** The `ContextualAliasPlugin` in `next.config.ts` is a webpack-only resolver plugin that contextually resolves `@/` imports for data-terminal. This forces `next dev --webpack` mode, which is significantly slower than Turbopack. Migrate to Turbopack's `resolveAlias` config so the `--webpack` flag can be dropped. Also eliminates the need for `transpilePackages`.
+**Priority:** High
+
+### 2026-02-17 - Component-level tests for wallet and payment UI
+**Source:** Identified during Phase 6 code review
+**Description:** Tests for `WalletButton`, `ChainBadge`, `PaymentMethodToggle`, `CostBreakdown`, `InsufficientFundsAlert`, `CheckoutSummary`. Deferred until React testing infrastructure (RTL + context wrapper utilities) is set up.
+**Priority:** Medium
+
 ### 2026-02-17 - Multi-account support
 **Source:** Not in current scope but frequently requested
 **Description:** Support switching between multiple wallet accounts without disconnecting. Shared dashboard across accounts.
