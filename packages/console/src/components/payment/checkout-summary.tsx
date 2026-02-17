@@ -19,7 +19,7 @@ export function CheckoutSummary({
   onPaymentMethodChange: (method: PaymentMethod) => void
   className?: string
 }) {
-  const { blockchainId } = useWallet()
+  const { blockchainId, isConnected } = useWallet()
   const streamDisabled = !isBlockchainPAYGCompatible(blockchainId)
 
   const { costSummary, isLoading: costLoading } =
@@ -46,7 +46,7 @@ export function CheckoutSummary({
         className="mb-4"
       />
 
-      {!balanceLoading && !canAfford && (
+      {(!isConnected || (!balanceLoading && !canAfford)) && (
         <InsufficientFundsAlert balance={balance} required={required} />
       )}
     </div>
