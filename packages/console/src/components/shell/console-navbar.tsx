@@ -1,10 +1,11 @@
-"use client";
+'use client'
 
-import { Search, Bell, Wallet } from "lucide-react";
-import { Button } from "@/components/data-terminal";
+import { Search, Bell } from 'lucide-react'
+import { Button } from '@/components/data-terminal'
+import { WalletButton } from '@/components/wallet/wallet-button'
 
 interface ConsoleNavbarProps {
-  onOpenCommandPalette?: () => void;
+  onOpenCommandPalette?: () => void
 }
 
 export function ConsoleNavbar({ onOpenCommandPalette }: ConsoleNavbarProps) {
@@ -16,7 +17,7 @@ export function ConsoleNavbar({ onOpenCommandPalette }: ConsoleNavbarProps) {
       <Button variant="ghost" size="sm" onClick={onOpenCommandPalette}>
         <Search size={16} />
         <span className="ml-2 text-xs text-muted-foreground">
-          Search... <kbd className="ml-1 opacity-50">⌘K</kbd>
+          Search... <kbd className="ml-1 opacity-50">&#x2318;K</kbd>
         </span>
       </Button>
 
@@ -28,11 +29,8 @@ export function ConsoleNavbar({ onOpenCommandPalette }: ConsoleNavbarProps) {
         >
           <Bell size={18} />
         </button>
-        <Button variant="primary" size="sm">
-          <Wallet size={16} />
-          Connect Wallet
-        </Button>
+        <WalletButton />
       </div>
     </nav>
-  );
+  )
 }
