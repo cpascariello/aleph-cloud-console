@@ -17,6 +17,7 @@ import { GpuInstanceManager } from '@/managers/gpu-instance'
 import { ConfidentialManager } from '@/managers/confidential'
 import { ProgramManager } from '@/managers/program'
 import { WebsiteManager } from '@/managers/website'
+import { BalanceManager } from '@/managers/balance'
 
 export interface AlephManagers {
   sdkClient: AlephHttpClient | AuthenticatedAlephHttpClient
@@ -33,6 +34,7 @@ export interface AlephManagers {
   confidentialManager: ConfidentialManager
   programManager: ProgramManager
   websiteManager: WebsiteManager
+  balanceManager: BalanceManager
 }
 
 export function createManagers(
@@ -54,6 +56,7 @@ export function createManagers(
     sdkClient,
   )
   const costManager = new CostManager(sdkClient)
+  const balanceManager = new BalanceManager(apiServer)
   const nodeManager = new NodeManager(
     fileManager,
     sdkClient,
@@ -144,5 +147,6 @@ export function createManagers(
     confidentialManager,
     programManager,
     websiteManager,
+    balanceManager,
   }
 }
