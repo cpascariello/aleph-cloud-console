@@ -1,6 +1,6 @@
 'use client'
 
-import { type ReactNode, Suspense, useEffect, useState } from 'react'
+import { type ReactNode, Suspense, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 import {
@@ -10,6 +10,7 @@ import {
   Skeleton,
   Button,
   IconButton,
+  StatusDot,
 } from '@/components/data-terminal'
 import { PageHeader } from '@/components/shell/page-header'
 import { ResourceFilterBar, type FilterOption } from '@/components/resources/resource-filter-bar'
@@ -18,6 +19,9 @@ import { ResourceEmptyState } from '@/components/resources/resource-empty-state'
 import { DeleteConfirmationModal } from '@/components/resources/delete-confirmation-modal'
 import { VolumeWizardContent } from '@/components/infrastructure/volume-wizard-content'
 import { useVolumes } from '@/hooks/queries/use-volumes'
+import { useInstances } from '@/hooks/queries/use-instances'
+import { usePrograms } from '@/hooks/queries/use-programs'
+import { useWebsites } from '@/hooks/queries/use-websites'
 import { useDeleteVolume } from '@/hooks/mutations/use-delete-resource'
 import { useResourceList } from '@/hooks/use-resource-list'
 import { useDrawer } from '@/hooks/use-drawer'
@@ -30,6 +34,7 @@ type RowShape = {
   select: ReactNode
   name: ReactNode
   volumeType: ReactNode
+  linked: ReactNode
   size: ReactNode
   date: ReactNode
   id: ReactNode
@@ -95,8 +100,34 @@ function VolumeRowActions({
 
 export default function VolumesPage() {
   const { data: volumes = [], isLoading } = useVolumes()
+  const { data: instances = [] } = useInstances()
+  const { data: programs = [] } = usePrograms()
+  const { data: websites = [] } = useWebsites()
   const deleteVolume = useDeleteVolume()
   const { openDrawer, closeDrawer } = useDrawer()
+
+  const linkedVolumeIds = useMemo(() => {
+    const ids = new Set<string>()
+
+    for (const resource of [...instances, ...programs]) {
+      for (const vol of resource.volumes ?? []) {
+        if ('ref' in vol && typeof vol.ref === 'string') {
+          ids.add(vol.ref)
+        }
+      }
+    }
+
+    for (const program of programs) {
+      if (program.code?.ref) ids.add(program.code.ref)
+      if (program.runtime?.ref) ids.add(program.runtime.ref)
+    }
+
+    for (const website of websites) {
+      if (website.volume_id) ids.add(website.volume_id)
+    }
+
+    return ids
+  }, [instances, programs, websites])
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -127,10 +158,16 @@ export default function VolumesPage() {
         : false),
     filterFn: (item, filter) => item.volumeType === filter,
     defaultSort: 'date',
+    defaultDirection: 'desc',
     sortFn: (a, b, key, dir) => {
       const mult = dir === 'asc' ? 1 : -1
       if (key === 'date') return mult * a.date.localeCompare(b.date)
       if (key === 'size') return mult * ((a.size ?? 0) - (b.size ?? 0))
+      if (key === 'linked') {
+        const aLinked = linkedVolumeIds.has(a.id) ? 1 : 0
+        const bLinked = linkedVolumeIds.has(b.id) ? 1 : 0
+        return mult * (aLinked - bLinked)
+      }
       return 0
     },
   })
@@ -186,6 +223,7 @@ export default function VolumesPage() {
                 { key: 'select', label: '' },
                 { key: 'name', label: 'Name', sortable: true },
                 { key: 'volumeType', label: 'Type' },
+                { key: 'linked', label: 'Linked', sortable: true },
                 { key: 'size', label: 'Size', sortable: true },
                 { key: 'date', label: 'Created', sortable: true },
                 { key: 'id', label: 'ID' },
@@ -213,6 +251,20 @@ export default function VolumesPage() {
                     <Badge variant="neutral">
                       {volumeTypeLabels[vol.volumeType] ?? vol.volumeType}
                     </Badge>
+                  ),
+                  linked: (
+                    <div className="flex items-center gap-2">
+                      <StatusDot
+                        variant={
+                          linkedVolumeIds.has(vol.id)
+                            ? 'success'
+                            : 'neutral'
+                        }
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        {linkedVolumeIds.has(vol.id) ? 'Yes' : 'No'}
+                      </span>
+                    </div>
                   ),
                   size: (
                     <span className="text-sm font-mono">

@@ -3,9 +3,7 @@
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  Alert,
   Badge,
-  Button,
   CopyButton,
   GlowLine,
   HudLabel,
@@ -13,7 +11,6 @@ import {
   Skeleton,
   StatusDot,
   TerminalCard,
-  TerminalTabs,
 } from '@/components/data-terminal'
 import { DeleteConfirmationModal } from '@/components/resources/delete-confirmation-modal'
 import { useWebsite } from '@/hooks/queries/use-websites'
@@ -103,82 +100,48 @@ export default function WebsiteDetailPage({
         </div>
       </div>
 
-      <TerminalTabs
-        tabs={[
-          {
-            label: 'Overview',
-            content: (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <TerminalCard tag="INFO" label="Details">
-                  <div className="flex flex-col gap-3 p-4">
-                    <div className="flex items-center gap-3 text-sm">
-                      <HudLabel>Framework</HudLabel>
-                      <span>
-                        {website.framework
-                          ? (FRAMEWORK_LABELS[website.framework] ??
-                            website.framework)
-                          : '—'}
-                      </span>
-                    </div>
-                    <GlowLine />
-                    <div className="flex items-center gap-3 text-sm">
-                      <HudLabel>Created</HudLabel>
-                      <span>{formatDate(website.date)}</span>
-                    </div>
-                    <GlowLine />
-                    <div className="flex items-center gap-3 text-sm">
-                      <HudLabel>Age</HudLabel>
-                      <span>{relativeTime(website.date)}</span>
-                    </div>
-                  </div>
-                </TerminalCard>
-                {website.url && (
-                  <TerminalCard tag="ACCESS" label="Endpoint">
-                    <div className="flex flex-col gap-2 p-4">
-                      <div className="flex items-center gap-2 text-sm">
-                        <HudLabel>URL</HudLabel>
-                        <a
-                          href={website.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-accent hover:underline font-mono text-xs"
-                        >
-                          {website.url}
-                        </a>
-                      </div>
-                    </div>
-                  </TerminalCard>
-                )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <TerminalCard tag="INFO" label="Details">
+          <div className="flex flex-col gap-3 p-4">
+            <div className="flex items-center gap-3 text-sm">
+              <HudLabel>Framework</HudLabel>
+              <span>
+                {website.framework
+                  ? (FRAMEWORK_LABELS[website.framework] ??
+                    website.framework)
+                  : '—'}
+              </span>
+            </div>
+            <GlowLine />
+            <div className="flex items-center gap-3 text-sm">
+              <HudLabel>Created</HudLabel>
+              <span>{formatDate(website.date)}</span>
+            </div>
+            <GlowLine />
+            <div className="flex items-center gap-3 text-sm">
+              <HudLabel>Age</HudLabel>
+              <span>{relativeTime(website.date)}</span>
+            </div>
+          </div>
+        </TerminalCard>
+        {website.url && (
+          <TerminalCard tag="ACCESS" label="Endpoint">
+            <div className="flex flex-col gap-2 p-4">
+              <div className="flex items-center gap-2 text-sm">
+                <HudLabel>URL</HudLabel>
+                <a
+                  href={website.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-accent hover:underline font-mono text-xs"
+                >
+                  {website.url}
+                </a>
               </div>
-            ),
-          },
-          {
-            label: 'Settings',
-            content: (
-              <div className="flex flex-col gap-4">
-                <TerminalCard tag="DANGER" label="Danger Zone">
-                  <div className="flex flex-col gap-3 p-4">
-                    <Alert variant="error">
-                      Deleting this website will remove it from the
-                      Aleph network. It will no longer be accessible.
-                    </Alert>
-                    <div className="flex justify-end">
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        iconLeft={<Trash2 size={14} />}
-                        onClick={() => setShowDelete(true)}
-                      >
-                        Delete Website
-                      </Button>
-                    </div>
-                  </div>
-                </TerminalCard>
-              </div>
-            ),
-          },
-        ]}
-      />
+            </div>
+          </TerminalCard>
+        )}
+      </div>
 
       <DeleteConfirmationModal
         isOpen={showDelete}

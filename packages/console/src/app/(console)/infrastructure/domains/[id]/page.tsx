@@ -3,9 +3,7 @@
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  Alert,
   Badge,
-  Button,
   CodeBlock,
   CopyButton,
   GlowLine,
@@ -14,7 +12,6 @@ import {
   Skeleton,
   StatusDot,
   TerminalCard,
-  TerminalTabs,
   Text,
 } from '@/components/data-terminal'
 import { DeleteConfirmationModal } from '@/components/resources/delete-confirmation-modal'
@@ -103,75 +100,40 @@ ${domain.name}.    IN    A        <check-console-for-ip>
         </div>
       </div>
 
-      <TerminalTabs
-        tabs={[
-          {
-            label: 'Overview',
-            content: (
-              <div className="flex flex-col gap-4">
-                <TerminalCard tag="DNS" label="DNS Configuration">
-                  <div className="flex flex-col gap-3 p-4">
-                    <Text variant="muted">
-                      Add these DNS records to your domain provider to
-                      point your domain to Aleph Cloud.
-                    </Text>
-                    <CodeBlock language="dns" code={dnsRecords} />
-                  </div>
-                </TerminalCard>
-                <TerminalCard tag="TARGET" label="Linked Resource">
-                  <div className="flex flex-col gap-3 p-4">
-                    <div className="flex items-center gap-3 text-sm">
-                      <HudLabel>Type</HudLabel>
-                      <Badge variant="info">
-                        {domain.target
-                          ? (EntityDomainTypeName[domain.target] ??
-                            domain.target)
-                          : '—'}
-                      </Badge>
-                    </div>
-                    <GlowLine />
-                    <div className="flex items-center gap-3 text-sm">
-                      <HudLabel>Reference</HudLabel>
-                      <span className="font-mono text-xs">
-                        {domain.ref
-                          ? truncateHash(domain.ref)
-                          : '—'}
-                      </span>
-                      {domain.ref && <CopyButton text={domain.ref} />}
-                    </div>
-                  </div>
-                </TerminalCard>
-              </div>
-            ),
-          },
-          {
-            label: 'Settings',
-            content: (
-              <div className="flex flex-col gap-4">
-                <TerminalCard tag="DANGER" label="Danger Zone">
-                  <div className="flex flex-col gap-3 p-4">
-                    <Alert variant="error">
-                      Deleting this domain will unlink it from its
-                      target resource. The DNS records will no longer
-                      resolve.
-                    </Alert>
-                    <div className="flex justify-end">
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        iconLeft={<Trash2 size={14} />}
-                        onClick={() => setShowDelete(true)}
-                      >
-                        Delete Domain
-                      </Button>
-                    </div>
-                  </div>
-                </TerminalCard>
-              </div>
-            ),
-          },
-        ]}
-      />
+      <div className="flex flex-col gap-4">
+        <TerminalCard tag="DNS" label="DNS Configuration">
+          <div className="flex flex-col gap-3 p-4">
+            <Text variant="muted">
+              Add these DNS records to your domain provider to
+              point your domain to Aleph Cloud.
+            </Text>
+            <CodeBlock language="dns" code={dnsRecords} />
+          </div>
+        </TerminalCard>
+        <TerminalCard tag="TARGET" label="Linked Resource">
+          <div className="flex flex-col gap-3 p-4">
+            <div className="flex items-center gap-3 text-sm">
+              <HudLabel>Type</HudLabel>
+              <Badge variant="info">
+                {domain.target
+                  ? (EntityDomainTypeName[domain.target] ??
+                    domain.target)
+                  : '—'}
+              </Badge>
+            </div>
+            <GlowLine />
+            <div className="flex items-center gap-3 text-sm">
+              <HudLabel>Reference</HudLabel>
+              <span className="font-mono text-xs">
+                {domain.ref
+                  ? truncateHash(domain.ref)
+                  : '—'}
+              </span>
+              {domain.ref && <CopyButton text={domain.ref} />}
+            </div>
+          </div>
+        </TerminalCard>
+      </div>
 
       <DeleteConfirmationModal
         isOpen={showDelete}

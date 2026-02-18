@@ -33,12 +33,13 @@ export interface UseResourceListOptions<T> {
   filterFn?: (item: T, filter: string) => boolean
   sortFn?: (a: T, b: T, key: string, dir: 'asc' | 'desc') => number
   defaultSort?: string
+  defaultDirection?: 'asc' | 'desc'
 }
 
 export function useResourceList<T>(
   options: UseResourceListOptions<T>,
 ): ResourceListState<T> {
-  const { items, getId, searchFn, filterFn, sortFn, defaultSort = '' } = options
+  const { items, getId, searchFn, filterFn, sortFn, defaultSort = '', defaultDirection = 'asc' } = options
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -47,7 +48,7 @@ export function useResourceList<T>(
   const filter = searchParams.get('filter') ?? ''
   const sortKey = searchParams.get('sort') ?? defaultSort
   const sortDirection =
-    (searchParams.get('dir') as 'asc' | 'desc') ?? 'asc'
+    (searchParams.get('dir') as 'asc' | 'desc') ?? defaultDirection
   const page = Number(searchParams.get('page') ?? '1')
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
