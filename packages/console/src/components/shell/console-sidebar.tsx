@@ -29,6 +29,7 @@ export function ConsoleSidebar() {
         items={sidebarItems}
         activeId={activeId}
         defaultCollapsed={false}
+        defaultOpen
         header={{
           logo: (
             <span className="font-display text-sm tracking-wider text-accent">

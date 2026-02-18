@@ -12,8 +12,16 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
   return (
     <>
       <ConsoleNavbar onOpenCommandPalette={open} />
-      <main className="flex-1 overflow-y-auto p-6">
-        <ErrorBoundary>{children}</ErrorBoundary>
+      <main className="flex-1 overflow-y-auto">
+        <div className="relative min-h-full p-6">
+          <div
+            className="pointer-events-none absolute inset-0 z-0 terminal-grid"
+            aria-hidden="true"
+          />
+          <div className="relative z-10">
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </div>
+        </div>
       </main>
       <CommandPalette open={isOpen} onClose={close} />
     </>

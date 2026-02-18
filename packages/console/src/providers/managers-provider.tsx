@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { createManagers, type AlephManagers, type Account } from 'aleph-sdk'
 import { useWallet } from '@/providers/wallet-provider'
 
@@ -37,7 +38,14 @@ export function ManagersProvider({ children }: { children: ReactNode }) {
     }
   }, [isConnected, getAlephAccount])
 
+  const queryClient = useQueryClient()
   const managers = useMemo(() => createManagers(account), [account])
+
+  useEffect(() => {
+    if (account) {
+      queryClient.invalidateQueries()
+    }
+  }, [account, queryClient])
 
   return <ManagersContext value={managers}>{children}</ManagersContext>
 }
