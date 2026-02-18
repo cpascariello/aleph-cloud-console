@@ -12,7 +12,7 @@ import {
 } from '@/components/data-terminal'
 import { WizardShell } from '@/components/wizard/wizard-shell'
 import { WizardStep } from '@/components/wizard/wizard-step'
-import { ResourcePageHeader } from '@/components/resources/resource-page-header'
+import { PageHeader } from '@/components/shell/page-header'
 import { useWizard, type WizardStep as WizardStepDef } from '@/hooks/use-wizard'
 import { WebsiteFrameworkId } from 'aleph-sdk'
 import { FileCode } from 'lucide-react'
@@ -221,7 +221,7 @@ export default function NewWebsitePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <ResourcePageHeader title="Deploy Website" />
+      <PageHeader />
       <WizardShell
         wizard={wizard}
         tag="NEW"

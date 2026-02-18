@@ -16,9 +16,7 @@ import {
   Square,
   RotateCcw,
   Trash2,
-  ArrowLeft,
 } from 'lucide-react'
-import Link from 'next/link'
 
 interface DetailHeaderProps {
   name: string
@@ -27,8 +25,6 @@ interface DetailHeaderProps {
   paymentMethod?: string | undefined
   onDelete: () => void
   isDeleting?: boolean | undefined
-  backHref: string
-  backLabel: string
   actions?: boolean | undefined
 }
 
@@ -39,8 +35,6 @@ export function DetailHeader({
   paymentMethod,
   onDelete,
   isDeleting = false,
-  backHref,
-  backLabel,
   actions = false,
 }: DetailHeaderProps) {
   const [showDelete, setShowDelete] = useState(false)
@@ -48,13 +42,6 @@ export function DetailHeader({
   return (
     <>
       <div className="flex flex-col gap-4">
-        <Link
-          href={backHref}
-          className="flex items-center gap-1 text-muted-foreground hover:text-foreground text-sm transition-colors w-fit"
-        >
-          <ArrowLeft size={14} />
-          {backLabel}
-        </Link>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-heading">

@@ -28,6 +28,7 @@ export {
 export {
   Accordion,
   Alert,
+  Breadcrumbs,
   Button,
   Card,
   Checkbox,

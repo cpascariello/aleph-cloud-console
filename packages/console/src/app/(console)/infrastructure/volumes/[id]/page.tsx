@@ -20,8 +20,8 @@ import { useVolume } from '@/hooks/queries/use-volumes'
 import { useDeleteVolume } from '@/hooks/mutations/use-delete-resource'
 import { formatDate, relativeTime, truncateHash } from '@/lib/format'
 import { humanReadableSize } from 'aleph-sdk'
-import { ArrowLeft, HardDrive, Trash2 } from 'lucide-react'
-import Link from 'next/link'
+import { HardDrive, Trash2 } from 'lucide-react'
+import { PageHeader } from '@/components/shell/page-header'
 
 export default function VolumeDetailPage({
   params,
@@ -63,14 +63,8 @@ export default function VolumeDetailPage({
 
   return (
     <div className="flex flex-col gap-6">
+      <PageHeader />
       <div className="flex flex-col gap-4">
-        <Link
-          href="/infrastructure/volumes"
-          className="flex items-center gap-1 text-muted-foreground hover:text-foreground text-sm transition-colors w-fit"
-        >
-          <ArrowLeft size={14} />
-          Back to Volumes
-        </Link>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <HardDrive size={24} className="text-accent" />

@@ -3,6 +3,7 @@
 import { use } from 'react'
 import { useRouter } from 'next/navigation'
 import { TerminalTabs, Skeleton } from '@/components/data-terminal'
+import { PageHeader } from '@/components/shell/page-header'
 import { DetailHeader } from '@/components/compute/detail/detail-header'
 import { OverviewTab } from '@/components/compute/detail/overview-tab'
 import { LogsTab } from '@/components/compute/detail/logs-tab'
@@ -46,14 +47,13 @@ export default function InstanceDetailPage({
 
   return (
     <div className="flex flex-col gap-6">
+      <PageHeader />
       <DetailHeader
         name={instance.name}
         id={instance.id}
         confirmed={instance.confirmed}
         onDelete={handleDelete}
         isDeleting={deleteInstance.isPending}
-        backHref="/compute"
-        backLabel="Back to Compute"
         actions
       />
       <TerminalTabs

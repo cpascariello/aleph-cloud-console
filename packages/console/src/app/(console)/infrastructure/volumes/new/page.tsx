@@ -12,7 +12,7 @@ import {
 } from '@/components/data-terminal'
 import { WizardShell } from '@/components/wizard/wizard-shell'
 import { WizardStep } from '@/components/wizard/wizard-step'
-import { ResourcePageHeader } from '@/components/resources/resource-page-header'
+import { PageHeader } from '@/components/shell/page-header'
 import { useWizard, type WizardStep as WizardStepDef } from '@/hooks/use-wizard'
 import { VolumeType } from 'aleph-sdk'
 import { HardDrive } from 'lucide-react'
@@ -170,7 +170,7 @@ export default function NewVolumePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <ResourcePageHeader title="Create Volume" />
+      <PageHeader />
       <WizardShell
         wizard={wizard}
         tag="NEW"

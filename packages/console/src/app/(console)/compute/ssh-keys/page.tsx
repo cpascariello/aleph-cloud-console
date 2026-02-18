@@ -9,7 +9,7 @@ import {
   IconButton,
   Text,
 } from '@/components/data-terminal'
-import { ResourcePageHeader } from '@/components/resources/resource-page-header'
+import { PageHeader } from '@/components/shell/page-header'
 import { ResourceFilterBar } from '@/components/resources/resource-filter-bar'
 import { ResourcePagination } from '@/components/resources/resource-pagination'
 import { ResourceEmptyState } from '@/components/resources/resource-empty-state'
@@ -65,11 +65,7 @@ export default function SSHKeysPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-start justify-between gap-4">
-        <ResourcePageHeader
-          title="SSH Keys"
-          description="Manage SSH keys for compute access"
-        />
+      <PageHeader>
         <Button
           variant="primary"
           size="sm"
@@ -78,7 +74,7 @@ export default function SSHKeysPage() {
         >
           Add Key
         </Button>
-      </div>
+      </PageHeader>
 
       {isLoading ? (
         <Skeleton variant="card" height="300px" />

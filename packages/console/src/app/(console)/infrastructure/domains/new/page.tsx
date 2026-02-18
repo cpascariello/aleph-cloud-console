@@ -12,7 +12,7 @@ import {
 } from '@/components/data-terminal'
 import { WizardShell } from '@/components/wizard/wizard-shell'
 import { WizardStep } from '@/components/wizard/wizard-step'
-import { ResourcePageHeader } from '@/components/resources/resource-page-header'
+import { PageHeader } from '@/components/shell/page-header'
 import { useWizard, type WizardStep as WizardStepDef } from '@/hooks/use-wizard'
 import { useInstances } from '@/hooks/queries/use-instances'
 import { usePrograms } from '@/hooks/queries/use-programs'
@@ -201,7 +201,7 @@ export default function NewDomainPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <ResourcePageHeader title="Add Domain" />
+      <PageHeader />
       <WizardShell
         wizard={wizard}
         tag="NEW"

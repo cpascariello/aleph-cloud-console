@@ -20,8 +20,8 @@ import { useWebsite } from '@/hooks/queries/use-websites'
 import { useDeleteWebsite } from '@/hooks/mutations/use-delete-resource'
 import { formatDate, relativeTime, truncateHash } from '@/lib/format'
 import { WebsiteFrameworkId } from 'aleph-sdk'
-import { ArrowLeft, FileCode, Trash2 } from 'lucide-react'
-import Link from 'next/link'
+import { FileCode, Trash2 } from 'lucide-react'
+import { PageHeader } from '@/components/shell/page-header'
 
 const FRAMEWORK_LABELS: Record<string, string> = {
   [WebsiteFrameworkId.React]: 'React',
@@ -66,14 +66,8 @@ export default function WebsiteDetailPage({
 
   return (
     <div className="flex flex-col gap-6">
+      <PageHeader />
       <div className="flex flex-col gap-4">
-        <Link
-          href="/infrastructure/websites"
-          className="flex items-center gap-1 text-muted-foreground hover:text-foreground text-sm transition-colors w-fit"
-        >
-          <ArrowLeft size={14} />
-          Back to Websites
-        </Link>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <FileCode size={24} className="text-accent" />

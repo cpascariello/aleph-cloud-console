@@ -194,6 +194,10 @@ packages/
       lib/              # Utilities (cn, formatting)
 ```
 
+### Component Boundary Rule
+
+Generic, reusable UI components (navigation, layout, data display) belong in the design system (`~/repos/data-terminal/`) as atoms or molecules. The console only contains app-specific wiring — hooks that derive data from routes/state, providers, and page compositions. See Decision #10 and ARCHITECTURE.md "Design System Integration" for details.
+
 ### Reference Codebases
 
 - **Current console (domain logic source):** `~/repos/front-aleph-cloud-page/`
@@ -202,7 +206,7 @@ packages/
 ### Current Features
 
 <!-- Update this list as features are added -->
-- App shell: sidebar, navbar, command palette, error boundary, theme/toast providers
+- App shell: sidebar, navbar, breadcrumb page header, command palette, error boundary, theme/toast providers
 - SDK: entity managers, types, Zod schemas, React Query hooks, mutation hooks
 - Dashboard: stat cards (6 entity counts), resource health table, quick actions, getting started checklist
 - Compute page: tabbed list (Instances, GPU, Confidential, Functions) with search, sort, pagination, delete

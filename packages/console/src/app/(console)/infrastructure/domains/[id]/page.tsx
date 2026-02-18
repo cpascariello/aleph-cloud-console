@@ -22,8 +22,8 @@ import { useDomain } from '@/hooks/queries/use-domains'
 import { useDeleteDomain } from '@/hooks/mutations/use-delete-resource'
 import { truncateHash } from '@/lib/format'
 import { EntityDomainTypeName } from 'aleph-sdk'
-import { ArrowLeft, Globe, Trash2 } from 'lucide-react'
-import Link from 'next/link'
+import { Globe, Trash2 } from 'lucide-react'
+import { PageHeader } from '@/components/shell/page-header'
 
 export default function DomainDetailPage({
   params,
@@ -70,14 +70,8 @@ ${domain.name}.    IN    A        <check-console-for-ip>
 
   return (
     <div className="flex flex-col gap-6">
+      <PageHeader />
       <div className="flex flex-col gap-4">
-        <Link
-          href="/infrastructure/domains"
-          className="flex items-center gap-1 text-muted-foreground hover:text-foreground text-sm transition-colors w-fit"
-        >
-          <ArrowLeft size={14} />
-          Back to Domains
-        </Link>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Globe size={24} className="text-accent" />

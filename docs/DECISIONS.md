@@ -18,6 +18,12 @@ Each entry includes:
 
 ---
 
+## Decision #10 - 2026-02-18
+**Context:** Adding breadcrumbs to replace large page titles. Initial implementation put the entire breadcrumb component (rendering + route derivation) in the console app.
+**Decision:** Reusable UI primitives go in the design system; app-specific wiring stays in the console. Breadcrumbs molecule (props in, JSX out) lives in data-terminal. PageHeader (derives crumbs from usePathname + sidebar config, sets document.title) lives in the console.
+**Rationale:** The design system is the single source of truth for visual patterns. Putting a generic navigation component in the console would create a precedent for bypassing the design system whenever a component is "only used here." Every generic component starts as "only used here."
+**Alternatives considered:** All-in-console (rejected: breaks design system boundary, harder to reuse). All-in-design-system including route logic (rejected: couples design system to Next.js).
+
 ## Decision #9 - 2026-02-18
 **Context:** The console dev server ran `next dev --webpack` because a custom `ContextualAliasPlugin` resolved `@/` imports contextually for data-terminal source files. Turbopack has no per-file conditional resolver.
 **Decision:** Migrate to Turbopack by standardizing data-terminal's internal imports on the `@dt/` prefix (already used by console to import DT components). Delete the ContextualAliasPlugin, replace webpack config with `turbopack.resolveAlias`, remove `--webpack` flag.

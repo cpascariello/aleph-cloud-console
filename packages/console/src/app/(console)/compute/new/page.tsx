@@ -32,7 +32,7 @@ import {
   PaymentMethod,
 } from 'aleph-sdk'
 import type { AddInstance, HoldPaymentConfiguration } from 'aleph-sdk'
-import { ResourcePageHeader } from '@/components/resources/resource-page-header'
+import { PageHeader } from '@/components/shell/page-header'
 
 const STEPS: WizardStep[] = [
   { id: 'template', label: 'Template' },
@@ -145,7 +145,7 @@ export default function NewInstancePage() {
   if (deployStage !== 'idle') {
     return (
       <div className="flex flex-col gap-6">
-        <ResourcePageHeader title="Deploy Instance" />
+        <PageHeader />
         <div className="max-w-3xl mx-auto w-full">
           <DeployProgress
             stage={deployStage}
@@ -211,7 +211,7 @@ export default function NewInstancePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <ResourcePageHeader title="Deploy Instance" />
+      <PageHeader />
       <WizardShell
         wizard={wizard}
         tag="NEW"

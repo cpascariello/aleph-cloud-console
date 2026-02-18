@@ -10,7 +10,7 @@ import {
   Button,
   IconButton,
 } from '@/components/data-terminal'
-import { ResourcePageHeader } from '@/components/resources/resource-page-header'
+import { PageHeader } from '@/components/shell/page-header'
 import { ResourceFilterBar, type FilterOption } from '@/components/resources/resource-filter-bar'
 import { ResourcePagination } from '@/components/resources/resource-pagination'
 import { ResourceEmptyState } from '@/components/resources/resource-empty-state'
@@ -21,7 +21,7 @@ import { useResourceList } from '@/hooks/use-resource-list'
 import { truncateHash, relativeTime } from '@/lib/format'
 import { humanReadableSize, VolumeType } from 'aleph-sdk'
 import type { Volume } from 'aleph-sdk'
-import { Settings, Trash2 } from 'lucide-react'
+import { Plus, Settings, Trash2 } from 'lucide-react'
 
 type RowShape = {
   select: ReactNode
@@ -114,12 +114,13 @@ export default function VolumesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <ResourcePageHeader
-        title="Volumes"
-        description="Manage your storage volumes"
-        createHref="/infrastructure/volumes/new"
-        createLabel="Create Volume"
-      />
+      <PageHeader>
+        <Link href="/infrastructure/volumes/new">
+          <Button variant="primary" size="sm" iconLeft={<Plus size={16} />}>
+            Create Volume
+          </Button>
+        </Link>
+      </PageHeader>
 
       {isLoading ? (
         <Skeleton variant="card" height="300px" />
