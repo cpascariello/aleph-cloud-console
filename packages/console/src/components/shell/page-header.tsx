@@ -1,7 +1,7 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
-import { useEffect, type ReactNode } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useCallback, useEffect, type ReactNode } from 'react'
 import { Breadcrumbs } from '@/components/data-terminal'
 import type { BreadcrumbItem } from '@dt/molecules/breadcrumbs'
 import { sidebarItems } from '@/components/shell/sidebar-config'
@@ -64,7 +64,21 @@ function buildCrumbs(pathname: string): BreadcrumbItem[] {
 
 export function PageHeader({ children }: { children?: ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
   const crumbs = buildCrumbs(pathname)
+
+  const handleLinkClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const anchor = (e.target as HTMLElement).closest('a')
+      if (!anchor) return
+      const href = anchor.getAttribute('href')
+      if (href?.startsWith('/')) {
+        e.preventDefault()
+        router.push(href)
+      }
+    },
+    [router],
+  )
 
   useEffect(() => {
     const segments = pathname.split('/').filter(Boolean)
@@ -78,10 +92,14 @@ export function PageHeader({ children }: { children?: ReactNode }) {
 
   return (
     <div className="mb-4 flex items-center justify-between">
-      <Breadcrumbs
-        items={crumbs}
-        backHref={pathname === '/dashboard' ? undefined : '/dashboard'}
-      />
+      {/* Intercept <a> clicks from the design system's Breadcrumbs
+          to use client-side navigation instead of full page reloads */}
+      <div onClick={handleLinkClick}>
+        <Breadcrumbs
+          items={crumbs}
+          backHref={pathname === '/dashboard' ? undefined : '/dashboard'}
+        />
+      </div>
       {children && (
         <div className="flex items-center gap-2">{children}</div>
       )}
