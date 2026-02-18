@@ -14,6 +14,7 @@ import {
 import { useSSHKeys } from '@/hooks/queries/use-ssh-keys'
 import { useInstances } from '@/hooks/queries/use-instances'
 import { useDomains } from '@/hooks/queries/use-domains'
+import { useWallet } from '@/providers/wallet-provider'
 
 const STORAGE_KEY = 'aleph-console-onboarding-dismissed'
 
@@ -27,6 +28,7 @@ interface ChecklistItem {
 
 export function GettingStarted() {
   const [dismissed, setDismissed] = useState(true)
+  const { isConnected, openModal } = useWallet()
   const sshKeys = useSSHKeys()
   const instances = useInstances()
   const domains = useDomains()
@@ -43,13 +45,11 @@ export function GettingStarted() {
 
   if (dismissed) return null
 
-  const walletConnected = true
-
   const items: ChecklistItem[] = [
     {
       id: 'wallet',
       label: 'Connect wallet',
-      completed: walletConnected,
+      completed: isConnected,
       href: '#',
       ctaLabel: 'Connect',
     },
@@ -110,13 +110,18 @@ export function GettingStarted() {
                   {item.label}
                 </span>
               </Checkbox>
-              {!item.completed && (
-                <Link href={item.href}>
-                  <Button variant="ghost" size="sm">
+              {!item.completed &&
+                (item.id === 'wallet' ? (
+                  <Button variant="ghost" size="sm" onClick={openModal}>
                     {item.ctaLabel}
                   </Button>
-                </Link>
-              )}
+                ) : (
+                  <Link href={item.href}>
+                    <Button variant="ghost" size="sm">
+                      {item.ctaLabel}
+                    </Button>
+                  </Link>
+                ))}
             </div>
           ))}
         </div>

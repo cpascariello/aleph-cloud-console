@@ -18,6 +18,12 @@ Each entry includes:
 
 ---
 
+## Decision #13 - 2026-02-18
+**Context:** Dashboard redesign — deciding layout for connected vs disconnected wallet states.
+**Decision:** Two-column layout when connected (main content + 320px sticky sidebar). Single-column marketing page when disconnected showing public network stats and connect CTA.
+**Rationale:** The previous single-column layout stacked everything vertically, making actionable shortcuts (quick actions, quick links) hard to find below the fold. The sidebar keeps actions always visible. Disconnected users see useful public data (network stats) instead of empty loading skeletons, with a clear call to connect.
+**Alternatives considered:** Single column with reordered sections (rejected: quick actions still pushed below fold on data-heavy dashboards). Full-width dashboard with floating action panel (rejected: more complex responsive behavior).
+
 ## Decision #12 - 2026-02-18
 **Context:** All Card/TerminalCard components showed hover glow (border color change + shadow) and scanline animation on hover, even when purely informational. Users perceived informational cards as clickable.
 **Decision:** Add `interactive` prop to Card and TerminalCard (default `false`). Hover glow and scanline only render when `interactive={true}`. Only template selection and tier selection cards opt in.

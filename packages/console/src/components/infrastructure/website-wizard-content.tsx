@@ -207,18 +207,28 @@ export function WebsiteWizardContent({
   const framework = wizard.getStepData<WebsiteFrameworkData>('framework')
   const config = wizard.getStepData<WebsiteConfigData>('configure')
 
+  const handleFrameworkChange = useCallback(
+    (d: WebsiteFrameworkData) => wizard.setStepData('framework', d),
+    [wizard.setStepData],
+  )
+
+  const handleConfigChange = useCallback(
+    (d: WebsiteConfigData) => wizard.setStepData('configure', d),
+    [wizard.setStepData],
+  )
+
   const stepContent = useMemo(
     () => [
       <FrameworkStep
         key="framework"
         data={framework}
-        onChange={(d) => wizard.setStepData('framework', d)}
+        onChange={handleFrameworkChange}
         setValid={wizard.setCanGoNext}
       />,
       <ConfigureWebsiteStep
         key="configure"
         data={config}
-        onChange={(d) => wizard.setStepData('configure', d)}
+        onChange={handleConfigChange}
         setValid={wizard.setCanGoNext}
       />,
       <ReviewWebsiteStep
@@ -228,7 +238,7 @@ export function WebsiteWizardContent({
         setValid={wizard.setCanGoNext}
       />,
     ],
-    [framework, config, wizard],
+    [framework, config, handleFrameworkChange, handleConfigChange, wizard.setCanGoNext],
   )
 
   return (

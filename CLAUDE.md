@@ -208,7 +208,8 @@ Generic, reusable UI components (navigation, layout, data display) belong in the
 <!-- Update this list as features are added -->
 - App shell: sidebar, navbar, breadcrumb page header, command palette, error boundary, theme/toast providers
 - SDK: entity managers, types, Zod schemas, React Query hooks, mutation hooks
-- Dashboard: stat cards (6 entity counts), resource health table, quick actions, getting started checklist
+- Dashboard (connected): two-column layout — main column (stat cards, resource health table with instances/programs/websites) + sticky sidebar (quick actions, quick links, getting started checklist)
+- Dashboard (disconnected): marketing page with feature highlight cards, public network stats (CCN/CRN counts, aggregate CPU/storage), connect wallet CTA
 - Compute page: tabbed list (Instances, GPU, Confidential, Functions) with search, sort, pagination, delete
 - Infrastructure pages: Volumes (type filter), Domains, Websites (framework filter) — all with search, pagination, delete
 - SSH Keys page: list with add key modal and inline delete

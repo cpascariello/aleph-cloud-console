@@ -163,12 +163,17 @@ export function VolumeWizardContent({
 
   const config = wizard.getStepData<VolumeConfig>('configure')
 
+  const handleConfigChange = useCallback(
+    (d: VolumeConfig) => wizard.setStepData('configure', d),
+    [wizard.setStepData],
+  )
+
   const stepContent = useMemo(
     () => [
       <ConfigureVolumeStep
         key="configure"
         data={config}
-        onChange={(d) => wizard.setStepData('configure', d)}
+        onChange={handleConfigChange}
         setValid={wizard.setCanGoNext}
       />,
       <ReviewVolumeStep
@@ -177,7 +182,7 @@ export function VolumeWizardContent({
         setValid={wizard.setCanGoNext}
       />,
     ],
-    [config, wizard],
+    [config, handleConfigChange, wizard.setCanGoNext],
   )
 
   return (

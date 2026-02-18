@@ -44,9 +44,9 @@ Ideas and scope creep captured for later consideration.
 
 ## Completed / Rejected
 
-### 2026-02-18 - Migrate webpack ContextualAliasPlugin to Turbopack
+### 2026-02-18 - Fix Next.js 16 Turbopack config for external symlink
 **Completed:** 2026-02-18
-**Delivered:** Renamed data-terminal @/ imports to @dt/ prefix. Replaced webpack ContextualAliasPlugin with turbopack.resolveAlias. Removed --webpack flag from dev script. Added Node.js built-in stubs via browser-conditional aliases. Fixed pre-existing toast context bug (dual React contexts). Added force-dynamic to console layout.
+**Delivered:** Turbopack-only config (no webpack). Three fixes: (1) `turbopack.root` set to computed common ancestor of monorepo and data-terminal real paths so Turbopack accepts files from both repos. (2) `packages/data-terminal` symlink changed from absolute path through `~/repos` (intermediate symlink) to relative `../../data-terminal` that resolves directly within the real filesystem — Turbopack doesn't fully resolve chained symlinks. (3) `tailwindcss` added to `resolveAlias` to fix CSS `@import` resolution with expanded root. Removed ContextualAliasPlugin and all webpack config.
 
 <details>
 <summary>Archived items</summary>

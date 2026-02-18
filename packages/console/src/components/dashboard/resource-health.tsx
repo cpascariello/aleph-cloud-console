@@ -11,6 +11,7 @@ import {
 } from '@/components/data-terminal'
 import { useInstances } from '@/hooks/queries/use-instances'
 import { usePrograms } from '@/hooks/queries/use-programs'
+import { useWebsites } from '@/hooks/queries/use-websites'
 import { truncateHash, relativeTime } from '@/lib/format'
 import { EntityType, EntityTypeName } from 'aleph-sdk'
 
@@ -37,8 +38,10 @@ function getStatusLabel(confirmed?: boolean): string {
 export function ResourceHealth() {
   const instances = useInstances()
   const programs = usePrograms()
+  const websites = useWebsites()
 
-  const isLoading = instances.isLoading || programs.isLoading
+  const isLoading =
+    instances.isLoading || programs.isLoading || websites.isLoading
 
   const rows = useMemo<HealthRow[]>(() => {
     const result: HealthRow[] = []
@@ -111,8 +114,40 @@ export function ResourceHealth() {
       })
     }
 
+    for (const site of websites.data ?? []) {
+      result.push({
+        name: (
+          <Link
+            href={`/infrastructure/websites/${site.id}`}
+            className="text-accent hover:underline font-mono text-sm"
+          >
+            {site.name || truncateHash(site.id)}
+          </Link>
+        ),
+        type: <Badge variant="neutral">Website</Badge>,
+        status: (
+          <span className="flex items-center gap-2">
+            <StatusDot variant={getStatusVariant(site.confirmed)} />
+            <span className="text-sm">
+              {getStatusLabel(site.confirmed)}
+            </span>
+          </span>
+        ),
+        date: (
+          <span className="text-muted-foreground text-sm">
+            {relativeTime(site.date)}
+          </span>
+        ),
+        id: (
+          <span className="font-mono text-xs text-muted-foreground">
+            {truncateHash(site.id)}
+          </span>
+        ),
+      })
+    }
+
     return result
-  }, [instances.data, programs.data])
+  }, [instances.data, programs.data, websites.data])
 
   if (isLoading) {
     return <Skeleton variant="card" height="200px" />

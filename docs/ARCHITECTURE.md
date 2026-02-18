@@ -99,6 +99,12 @@ Examples:
 **Key files:** `packages/console/src/components/shell/page-header.tsx`, `~/repos/data-terminal/src/molecules/breadcrumbs.tsx`
 **Notes:** Every page uses `<PageHeader>` as its first element. List pages pass action buttons as children. Wizard and detail pages use `<PageHeader />` without children.
 
+### Dashboard Pattern
+**Context:** Dashboard needs different content for connected (wallet linked) vs disconnected users.
+**Approach:** `DashboardPage` checks `useWallet().isConnected` and renders `ConnectedDashboard` or `DisconnectedDashboard`. Connected layout uses a two-column grid (`1fr 320px` on `lg+`, single column below) with a sticky sidebar. Disconnected layout shows public network stats (fetched without auth via `useNetworkStats`), feature highlight cards, and a connect wallet CTA.
+**Key files:** `packages/console/src/app/(console)/dashboard/page.tsx`, `packages/console/src/components/dashboard/connected-dashboard.tsx`, `packages/console/src/components/dashboard/disconnected-dashboard.tsx`, `packages/console/src/components/dashboard/dashboard-sidebar.tsx`
+**Notes:** `useNetworkStats` fetches CCN/CRN counts and aggregate compute specs from `nodeManager` — public data requiring no wallet connection. The sidebar composes `QuickActions`, `QuickLinks`, and `GettingStarted` in a sticky column.
+
 ### Resource List Pattern
 **Context:** All resource list pages (compute, volumes, domains, websites, SSH keys) share the same interaction model: search, filter, sort, paginate, select, bulk actions.
 **Approach:** `useResourceList<T>` generic hook manages all list state via URL search params. Each page provides `getId`, `searchFn`, `filterFn`, and `sortFn` callbacks. Pagination is fixed at 25 items. Selection state is local (not URL).
@@ -113,9 +119,9 @@ Examples:
 
 ### Tailwind CSS 4 + Turbopack
 **Context:** Next.js 16 with pnpm monorepo. Tailwind CSS 4 uses `@tailwindcss/postcss` plugin.
-**Approach:** `postcss` must be an explicit devDependency (pnpm doesn't hoist transitive deps). Config must be `.cjs` format (`postcss.config.cjs`). The `@source` directive in `globals.css` tells Tailwind to scan data-terminal source files for utility classes. `@dt/*` aliases are configured via `turbopack.resolveAlias` in `next.config.ts`. Node.js built-in stubs (fs, net, tls, os, path) use `{ browser: "./src/lib/empty.ts" }` conditionals for client bundles.
-**Key files:** `packages/console/postcss.config.cjs`, `packages/console/src/app/globals.css`, `packages/console/next.config.ts`
-**Notes:** data-terminal uses `@dt/` as its internal import prefix (not `@/`), matching the aliases the console configures. This avoids the path collision that previously required a custom webpack resolver plugin. The `outputFileTracingRoot` is dynamically computed to encompass both the monorepo and the symlinked data-terminal target. `typescript: { ignoreBuildErrors: true }` is set because the wider root exposes pre-existing data-terminal type errors — the console's `pnpm typecheck` script handles type checking properly.
+**Approach:** `postcss` must be an explicit devDependency (pnpm doesn't hoist transitive deps). Config must be `.cjs` format (`postcss.config.cjs`). The `@source` directive in `globals.css` tells Tailwind to scan data-terminal source files for utility classes. `@dt/*` aliases are configured via `turbopack.resolveAlias` in `next.config.ts`. Node.js built-in stubs (`fs`, `net`, `tls`, `os`, `path`) point to `src/lib/empty-module.ts` (an empty ESM export). `turbopack.root` is dynamically computed as the closest common ancestor of the monorepo and data-terminal's real paths, allowing Turbopack to read files across both directories.
+**Key files:** `packages/console/postcss.config.cjs`, `packages/console/src/app/globals.css`, `packages/console/next.config.ts`, `packages/console/src/lib/empty-module.ts`
+**Notes:** data-terminal uses `@dt/` as its internal import prefix (not `@/`), matching the aliases the console configures. The `packages/data-terminal` symlink MUST use a relative path (`../../data-terminal`) that resolves within the real filesystem — not through intermediate symlinks (e.g. `~/repos` → Dropbox). Turbopack checks symlink targets against its filesystem root but does NOT fully resolve chained symlinks (vercel/next.js#77562). The `tailwindcss` CSS package is also aliased in `resolveAlias` because the expanded `turbopack.root` changes PostCSS module resolution context. Never add a `webpack` key to `next.config.ts` — Turbopack handles all resolution.
 
 ---
 

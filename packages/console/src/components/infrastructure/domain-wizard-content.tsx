@@ -200,12 +200,17 @@ export function DomainWizardContent({
 
   const config = wizard.getStepData<DomainConfig>('configure')
 
+  const handleConfigChange = useCallback(
+    (d: DomainConfig) => wizard.setStepData('configure', d),
+    [wizard.setStepData],
+  )
+
   const stepContent = useMemo(
     () => [
       <ConfigureDomainStep
         key="configure"
         data={config}
-        onChange={(d) => wizard.setStepData('configure', d)}
+        onChange={handleConfigChange}
         setValid={wizard.setCanGoNext}
         defaultTargetRef={defaultTargetRef}
       />,
@@ -215,7 +220,7 @@ export function DomainWizardContent({
         setValid={wizard.setCanGoNext}
       />,
     ],
-    [config, wizard, defaultTargetRef],
+    [config, handleConfigChange, wizard.setCanGoNext, defaultTargetRef],
   )
 
   return (

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Button, GlowLine, Heading } from '@/components/data-terminal'
+import { Button, TerminalCard } from '@/components/data-terminal'
 import { VolumeWizardContent } from '@/components/infrastructure/volume-wizard-content'
 import { DomainWizardContent } from '@/components/infrastructure/domain-wizard-content'
 import { WebsiteWizardContent } from '@/components/infrastructure/website-wizard-content'
@@ -47,12 +47,15 @@ export function QuickActions() {
   const { openDrawer, closeDrawer } = useDrawer()
 
   return (
-    <div>
-      <Heading level={4}>Quick Actions</Heading>
-      <GlowLine className="my-3" />
-      <div className="flex flex-wrap gap-3">
-        <Link href="/compute/new">
-          <Button variant="secondary" size="sm" iconLeft={<Server size={16} />}>
+    <TerminalCard tag="CMD" label="Quick Actions">
+      <div className="flex flex-col gap-2 p-4">
+        <Link href="/compute/new" className="w-full">
+          <Button
+            variant="secondary"
+            size="sm"
+            iconLeft={<Server size={16} />}
+            className="w-full justify-start"
+          >
             New Instance
           </Button>
         </Link>
@@ -62,6 +65,7 @@ export function QuickActions() {
             variant="secondary"
             size="sm"
             iconLeft={action.icon}
+            className="w-full justify-start"
             onClick={() =>
               openDrawer({
                 title: action.title,
@@ -74,6 +78,6 @@ export function QuickActions() {
           </Button>
         ))}
       </div>
-    </div>
+    </TerminalCard>
   )
 }

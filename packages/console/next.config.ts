@@ -1,43 +1,51 @@
 import type { NextConfig } from "next";
-import path from "node:path";
 import fs from "node:fs";
+import path from "node:path";
 
-// Turbopack rejects symlinks that point outside the filesystem root.
-// packages/data-terminal is a symlink to an external repo, so we widen
-// the root to the nearest common ancestor of both paths.
 const monorepoRoot = path.resolve(__dirname, "../..");
-const dtPath = path.resolve(__dirname, "../data-terminal");
-const dtStat = fs.lstatSync(dtPath);
-const dtTarget = dtStat.isSymbolicLink() ? fs.readlinkSync(dtPath) : dtPath;
-const monoSegments = monorepoRoot.split(path.sep);
-const dtSegments = dtTarget.split(path.sep);
-const shared: string[] = [];
-for (let i = 0; i < Math.min(monoSegments.length, dtSegments.length); i++) {
-  if (monoSegments[i] === dtSegments[i]) shared.push(monoSegments[i]!);
+const dtSymlink = path.resolve(__dirname, "../data-terminal");
+
+// Turbopack's filesystem root must encompass both the monorepo and
+// data-terminal's real path (symlinked from outside the monorepo).
+// Compute the closest common ancestor of their real paths.
+const monorepoReal = fs.realpathSync(monorepoRoot);
+const dtReal = fs.realpathSync(dtSymlink);
+const monoParts = monorepoReal.split(path.sep);
+const dtParts = dtReal.split(path.sep);
+const commonParts: string[] = [];
+for (
+  let i = 0;
+  i < Math.min(monoParts.length, dtParts.length);
+  i++
+) {
+  if (monoParts[i] === dtParts[i]) commonParts.push(monoParts[i]);
   else break;
 }
-const fsRoot = shared.join(path.sep) || path.sep;
+const turboRoot = commonParts.join(path.sep) || path.sep;
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: fsRoot,
+  outputFileTracingRoot: turboRoot,
   transpilePackages: ["data-terminal"],
-  // Wider filesystem root causes next build's tsc to pick up
-  // data-terminal type errors (duplicate @types/react Ref types).
-  // Console's `pnpm typecheck` filters these properly.
-  typescript: { ignoreBuildErrors: true },
   turbopack: {
+    root: turboRoot,
     resolveAlias: {
+      // CSS @import "tailwindcss" breaks with expanded root because
+      // node_modules resolution starts from the wrong directory.
+      tailwindcss: path.join(__dirname, "node_modules/tailwindcss"),
+      // @dt/* aliases resolve to data-terminal workspace package.
       "@dt/atoms": "../data-terminal/src/atoms",
       "@dt/molecules": "../data-terminal/src/molecules",
       "@dt/hooks": "../data-terminal/src/hooks",
-      "@dt/lib": "../data-terminal/src/lib",
       "@dt/providers": "../data-terminal/src/providers",
+      "@dt/lib": "../data-terminal/src/lib",
       "@dt/types": "../data-terminal/src/types",
-      fs: { browser: "./src/lib/empty.ts" },
-      net: { browser: "./src/lib/empty.ts" },
-      tls: { browser: "./src/lib/empty.ts" },
-      os: { browser: "./src/lib/empty.ts" },
-      path: { browser: "./src/lib/empty.ts" },
+      // @aleph-sdk/message transitively imports `ws` which requires
+      // Node.js built-ins unavailable in the browser bundle.
+      fs: "./src/lib/empty-module.ts",
+      net: "./src/lib/empty-module.ts",
+      tls: "./src/lib/empty-module.ts",
+      os: "./src/lib/empty-module.ts",
+      "node:path": "./src/lib/empty-module.ts",
     },
   },
 };
