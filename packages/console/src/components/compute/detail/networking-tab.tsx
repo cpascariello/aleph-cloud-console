@@ -7,22 +7,54 @@ import {
   TerminalCard,
   Text,
 } from '@/components/data-terminal'
+import { VolumeWizardContent } from '@/components/infrastructure/volume-wizard-content'
+import { DomainWizardContent } from '@/components/infrastructure/domain-wizard-content'
+import { useDrawer } from '@/hooks/use-drawer'
 import { truncateHash } from '@/lib/format'
 import type { Instance } from 'aleph-sdk'
 import { Globe, HardDrive, Plus } from 'lucide-react'
-import Link from 'next/link'
 
 interface NetworkingTabProps {
   instance: Instance
 }
 
 export function NetworkingTab({ instance }: NetworkingTabProps) {
-  // Extract volumes and domains from instance content
+  const { openDrawer, closeDrawer } = useDrawer()
+
   const volumes = (
     (instance as Record<string, unknown>)['volumes'] as
       | Array<{ ref?: string; mount?: string; name?: string }>
       | undefined
   ) ?? []
+
+  const handleAttachVolume = () => {
+    openDrawer({
+      title: 'Attach Volume',
+      tag: 'NEW',
+      content: (
+        <VolumeWizardContent
+          variant="drawer"
+          onComplete={closeDrawer}
+          onBack={closeDrawer}
+        />
+      ),
+    })
+  }
+
+  const handleLinkDomain = () => {
+    openDrawer({
+      title: 'Link Domain',
+      tag: 'NEW',
+      content: (
+        <DomainWizardContent
+          variant="drawer"
+          defaultTargetRef={instance.id}
+          onComplete={closeDrawer}
+          onBack={closeDrawer}
+        />
+      ),
+    })
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -53,6 +85,7 @@ export function NetworkingTab({ instance }: NetworkingTabProps) {
               variant="ghost"
               size="sm"
               iconLeft={<Plus size={14} />}
+              onClick={handleAttachVolume}
             >
               Attach Volume
             </Button>
@@ -66,15 +99,14 @@ export function NetworkingTab({ instance }: NetworkingTabProps) {
             No domains linked. Link a domain from the Domains page.
           </Text>
           <div className="flex justify-end pt-2">
-            <Link href="/infrastructure/domains/new">
-              <Button
-                variant="ghost"
-                size="sm"
-                iconLeft={<Globe size={14} />}
-              >
-                Link Domain
-              </Button>
-            </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              iconLeft={<Globe size={14} />}
+              onClick={handleLinkDomain}
+            >
+              Link Domain
+            </Button>
           </div>
         </div>
       </TerminalCard>

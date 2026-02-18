@@ -224,3 +224,8 @@ Generic, reusable UI components (navigation, layout, data display) belong in the
 - Payment components: payment method toggle (Hold/Stream), cost breakdown with line items, insufficient funds alert, checkout summary composite for wizard footers
 - Payment hooks: usePricing (cached pricing aggregate), useCostEstimate (reactive cost computation), useCanAfford (balance check with React Query)
 - SDK additions: BalanceManager (pyaleph API balance fetching), provider type guards (isEip155Provider, isSolanaProvider)
+- Drawer system: TerminalDrawer component (z-[45]), DrawerProvider/useDrawer context, backdrop dismiss, focus trap
+- Simple wizard drawer: volume, domain, website wizards open in side panel from list pages and dashboard
+- Contextual creation: add domain/volume from instance detail networking tab via drawer (domain pre-populates target)
+- Deep link support: `/new` routes redirect to list page with `?wizard=type` param to auto-open drawer
+- Hybrid wizard layout: simple wizards in 460px drawer, instance wizard full-page with wider max-w-5xl layout

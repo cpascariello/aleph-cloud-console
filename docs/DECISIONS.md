@@ -18,6 +18,12 @@ Each entry includes:
 
 ---
 
+## Decision #11 - 2026-02-18
+**Context:** Exploring how to improve wizard/creation flow UX. Four approaches compared: side panel for everything, hybrid, split view, improved full-page only.
+**Decision:** Hybrid approach — side panel drawer for simple wizards (volume, domain, website) and contextual actions (from instance detail), improved full-page for complex wizards (instance).
+**Rationale:** Instance wizard (5 steps, template grid, SSH keys, deploy progress) needs full width. Simple 2-3 step wizards fit in 460px. Contextual creation from detail pages (add domain/volume to instance) must stay in context. One-size-fits-all either cramps complex forms or over-engineers simple ones.
+**Alternatives considered:** Side panel for everything (rejected: instance wizard too complex for 460px). Split view (rejected: doesn't work from detail pages, complex responsive). Improved full-page only (rejected: doesn't solve contextual creation).
+
 ## Decision #10 - 2026-02-18
 **Context:** Adding breadcrumbs to replace large page titles. Initial implementation put the entire breadcrumb component (rendering + route derivation) in the console app.
 **Decision:** Reusable UI primitives go in the design system; app-specific wiring stays in the console. Breadcrumbs molecule (props in, JSX out) lives in data-terminal. PageHeader (derives crumbs from usePathname + sidebar config, sets document.title) lives in the console.

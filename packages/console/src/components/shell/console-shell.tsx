@@ -5,9 +5,12 @@ import { ConsoleNavbar } from "@/components/shell/console-navbar";
 import { CommandPalette } from "@/components/shell/command-palette";
 import { ErrorBoundary } from "@/components/shell/error-boundary";
 import { useCommandPalette } from "@/hooks/use-command-palette";
+import { useDrawer } from "@/hooks/use-drawer";
+import { TerminalDrawer } from "@/components/data-terminal";
 
 export function ConsoleShell({ children }: { children: ReactNode }) {
-  const { isOpen, open, close } = useCommandPalette();
+  const { isOpen: isPaletteOpen, open, close } = useCommandPalette();
+  const { isOpen: isDrawerOpen, drawerContent, closeDrawer } = useDrawer();
 
   return (
     <>
@@ -23,7 +26,16 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </main>
-      <CommandPalette open={isOpen} onClose={close} />
+      <TerminalDrawer
+        open={isDrawerOpen}
+        onClose={closeDrawer}
+        title={drawerContent?.title}
+        tag={drawerContent?.tag}
+        footer={drawerContent?.footer}
+      >
+        {drawerContent?.content}
+      </TerminalDrawer>
+      <CommandPalette open={isPaletteOpen} onClose={close} />
     </>
   );
 }

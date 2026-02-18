@@ -57,8 +57,14 @@ aleph-cloud-console/          # Monorepo root
 
 ### Wizard Pattern
 **Context:** Resource creation involves multi-step forms with validation, cost estimation, and blockchain signing.
-**Approach:** Shared `useWizard` hook manages step state, per-step validation, and localStorage draft auto-save. Each resource type defines its own steps.
-**Key files:** `packages/console/src/components/wizard/`, `packages/console/src/hooks/use-wizard.ts`
+**Approach:** Hybrid approach — simple wizards (volume, domain, website, ≤3 steps) render in a side-panel drawer for in-context creation, while complex wizards (instance, 5+ steps) stay full-page with wider layout (`max-w-5xl`). `WizardShell` accepts a `variant` prop (`'page'` | `'drawer'`) that controls chrome rendering. Wizard logic is extracted into content components (`VolumeWizardContent`, `DomainWizardContent`, `WebsiteWizardContent`) that render in both contexts. `useWizard` hook manages step state, per-step validation, and localStorage draft auto-save.
+**Key files:** `packages/console/src/components/wizard/wizard-shell.tsx`, `packages/console/src/hooks/use-wizard.ts`, `packages/console/src/components/infrastructure/*-wizard-content.tsx`
+
+### Drawer Pattern
+**Context:** Simple wizards (volume, domain, website) and contextual actions (adding domain/volume from instance detail) need to stay in context rather than navigating away.
+**Approach:** TerminalDrawer (from data-terminal) renders in ConsoleShell at z-[45]. DrawerProvider + useDrawer hook manage open/close state with arbitrary content. List pages and detail pages open wizards in the drawer via onClick handlers. Deep link support via `?wizard=type` search params; `/new` routes redirect to list pages with the param.
+**Key files:** `data-terminal/src/molecules/drawer.tsx`, `console/src/providers/drawer-provider.tsx`, `console/src/hooks/use-drawer.ts`, `console/src/components/shell/console-shell.tsx`
+**Notes:** Complex wizards (instance, 5+ steps) stay full-page. Simple wizards (≤3 steps) use the drawer. The same wizard content component renders in both contexts via WizardShell `variant` prop.
 
 ### Design System Integration
 **Context:** data-terminal provides 24 atoms + 31 molecules with a cyberpunk/terminal aesthetic.

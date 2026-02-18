@@ -1,7 +1,8 @@
 'use client'
 
-import { type ReactNode, Suspense, useState } from 'react'
+import { type ReactNode, Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useSearchParams, useRouter } from 'next/navigation'
 import {
   DataTable,
   Badge,
@@ -15,9 +16,11 @@ import { ResourceFilterBar } from '@/components/resources/resource-filter-bar'
 import { ResourcePagination } from '@/components/resources/resource-pagination'
 import { ResourceEmptyState } from '@/components/resources/resource-empty-state'
 import { DeleteConfirmationModal } from '@/components/resources/delete-confirmation-modal'
+import { DomainWizardContent } from '@/components/infrastructure/domain-wizard-content'
 import { useDomains } from '@/hooks/queries/use-domains'
 import { useDeleteDomain } from '@/hooks/mutations/use-delete-resource'
 import { useResourceList } from '@/hooks/use-resource-list'
+import { useDrawer } from '@/hooks/use-drawer'
 import { truncateHash, relativeTime } from '@/lib/format'
 import { EntityDomainTypeName } from 'aleph-sdk'
 import type { Domain } from 'aleph-sdk'
@@ -78,6 +81,26 @@ function DomainRowActions({
 export default function DomainsPage() {
   const { data: domains = [], isLoading } = useDomains()
   const deleteDomain = useDeleteDomain()
+  const { openDrawer, closeDrawer } = useDrawer()
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (searchParams.get('wizard') === 'domain') {
+      openDrawer({
+        title: 'New Domain',
+        tag: 'NEW',
+        content: (
+          <DomainWizardContent
+            variant="drawer"
+            onComplete={closeDrawer}
+            onBack={closeDrawer}
+          />
+        ),
+      })
+      router.replace('/infrastructure/domains')
+    }
+  }, [searchParams, openDrawer, closeDrawer, router])
 
   const list = useResourceList<Domain>({
     items: domains,
@@ -94,14 +117,31 @@ export default function DomainsPage() {
     },
   })
 
+  const handleAddDomain = () => {
+    openDrawer({
+      title: 'New Domain',
+      tag: 'NEW',
+      content: (
+        <DomainWizardContent
+          variant="drawer"
+          onComplete={closeDrawer}
+          onBack={closeDrawer}
+        />
+      ),
+    })
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader>
-        <Link href="/infrastructure/domains/new">
-          <Button variant="primary" size="sm" iconLeft={<Plus size={16} />}>
-            Add Domain
-          </Button>
-        </Link>
+        <Button
+          variant="primary"
+          size="sm"
+          iconLeft={<Plus size={16} />}
+          onClick={handleAddDomain}
+        >
+          Add Domain
+        </Button>
       </PageHeader>
 
       {isLoading ? (
@@ -109,7 +149,7 @@ export default function DomainsPage() {
       ) : list.isEmpty ? (
         <ResourceEmptyState
           resourceName="Domain"
-          createHref="/infrastructure/domains/new"
+          createHref="/infrastructure/domains?wizard=domain"
           createLabel="Add Domain"
         />
       ) : (

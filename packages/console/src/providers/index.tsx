@@ -6,6 +6,7 @@ import { ToastProvider } from '@dt/providers/toast-provider'
 import { QueryProvider } from '@/providers/query-provider'
 import { WalletProvider } from '@/providers/wallet-provider'
 import { ManagersProvider } from '@/providers/managers-provider'
+import { DrawerProvider } from '@/providers/drawer-provider'
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -14,7 +15,9 @@ export function Providers({ children }: { children: ReactNode }) {
         <ManagersProvider>
           <ThemeProvider>
             <ToastProvider>
-              {children}
+              <DrawerProvider>
+                {children}
+              </DrawerProvider>
             </ToastProvider>
           </ThemeProvider>
         </ManagersProvider>

@@ -1,7 +1,8 @@
 'use client'
 
-import { type ReactNode, Suspense, useState } from 'react'
+import { type ReactNode, Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useSearchParams, useRouter } from 'next/navigation'
 import {
   DataTable,
   Badge,
@@ -15,9 +16,11 @@ import { ResourceFilterBar, type FilterOption } from '@/components/resources/res
 import { ResourcePagination } from '@/components/resources/resource-pagination'
 import { ResourceEmptyState } from '@/components/resources/resource-empty-state'
 import { DeleteConfirmationModal } from '@/components/resources/delete-confirmation-modal'
+import { WebsiteWizardContent } from '@/components/infrastructure/website-wizard-content'
 import { useWebsites } from '@/hooks/queries/use-websites'
 import { useDeleteWebsite } from '@/hooks/mutations/use-delete-resource'
 import { useResourceList } from '@/hooks/use-resource-list'
+import { useDrawer } from '@/hooks/use-drawer'
 import { truncateHash, relativeTime } from '@/lib/format'
 import { WebsiteFrameworkId, WebsiteFrameworks } from 'aleph-sdk'
 import type { Website } from 'aleph-sdk'
@@ -85,6 +88,26 @@ function WebsiteRowActions({
 export default function WebsitesPage() {
   const { data: websites = [], isLoading } = useWebsites()
   const deleteWebsite = useDeleteWebsite()
+  const { openDrawer, closeDrawer } = useDrawer()
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (searchParams.get('wizard') === 'website') {
+      openDrawer({
+        title: 'New Website',
+        tag: 'NEW',
+        content: (
+          <WebsiteWizardContent
+            variant="drawer"
+            onComplete={closeDrawer}
+            onBack={closeDrawer}
+          />
+        ),
+      })
+      router.replace('/infrastructure/websites')
+    }
+  }, [searchParams, openDrawer, closeDrawer, router])
 
   const list = useResourceList<Website>({
     items: websites,
@@ -102,14 +125,31 @@ export default function WebsitesPage() {
     },
   })
 
+  const handleDeployWebsite = () => {
+    openDrawer({
+      title: 'New Website',
+      tag: 'NEW',
+      content: (
+        <WebsiteWizardContent
+          variant="drawer"
+          onComplete={closeDrawer}
+          onBack={closeDrawer}
+        />
+      ),
+    })
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader>
-        <Link href="/infrastructure/websites/new">
-          <Button variant="primary" size="sm" iconLeft={<Plus size={16} />}>
-            Deploy Website
-          </Button>
-        </Link>
+        <Button
+          variant="primary"
+          size="sm"
+          iconLeft={<Plus size={16} />}
+          onClick={handleDeployWebsite}
+        >
+          Deploy Website
+        </Button>
       </PageHeader>
 
       {isLoading ? (
@@ -117,7 +157,7 @@ export default function WebsitesPage() {
       ) : list.isEmpty ? (
         <ResourceEmptyState
           resourceName="Website"
-          createHref="/infrastructure/websites/new"
+          createHref="/infrastructure/websites?wizard=website"
           createLabel="Deploy Website"
         />
       ) : (
