@@ -18,6 +18,12 @@ Each entry includes:
 
 ---
 
+## Decision #12 - 2026-02-18
+**Context:** All Card/TerminalCard components showed hover glow (border color change + shadow) and scanline animation on hover, even when purely informational. Users perceived informational cards as clickable.
+**Decision:** Add `interactive` prop to Card and TerminalCard (default `false`). Hover glow and scanline only render when `interactive={true}`. Only template selection and tier selection cards opt in.
+**Rationale:** Hover effects signal interactivity. Applying them to informational cards (detail panels, dashboards, wizard containers) is misleading UX. Most cards in the console are informational, so default-off minimizes changes. The scanline default derives from `interactive` but can be overridden independently via the existing `scanline` prop.
+**Alternatives considered:** Default `interactive={true}` with opt-out (rejected: more changes needed, wrong default for the majority of usages).
+
 ## Decision #11 - 2026-02-18
 **Context:** Exploring how to improve wizard/creation flow UX. Four approaches compared: side panel for everything, hybrid, split view, improved full-page only.
 **Decision:** Hybrid approach — side panel drawer for simple wizards (volume, domain, website) and contextual actions (from instance detail), improved full-page for complex wizards (instance).

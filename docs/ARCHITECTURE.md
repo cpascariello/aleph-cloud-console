@@ -71,6 +71,8 @@ aleph-cloud-console/          # Monorepo root
 **Approach:** Components imported via path aliases (`@dt/atoms`, `@dt/molecules`) or barrel re-export. Console uses data-terminal as source (transpiled by Next.js), not as a published package.
 **Key files:** `packages/console/src/components/data-terminal.ts` (barrel), `~/repos/data-terminal/src/`
 
+**Card interactivity:** `Card` and `TerminalCard` accept an `interactive` prop (default `false`). When `true`, the card shows hover glow (border + shadow) and scanline overlay, signaling clickability. Informational cards (detail panels, dashboards, wizard containers) omit it. Only selectable cards (template picker, tier picker) set `interactive`. The `scanline` prop can still be overridden independently.
+
 **Component boundary rule:** If a UI component is a generic, reusable pattern (navigation, layout, data display), it belongs in the design system as an atom or molecule — even if only the console uses it today. The console should only contain app-specific wiring (hooks that derive data from routes/state, providers, page compositions). When in doubt: if the component takes data as props and renders UI, it's a design system component. If it reads from Next.js hooks, sidebar config, or app context, it's console-specific.
 
 Examples:

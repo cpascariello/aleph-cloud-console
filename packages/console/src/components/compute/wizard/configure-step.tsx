@@ -104,6 +104,7 @@ export function ConfigureStep({
                 key={t.value}
                 tag={t.value === tier ? 'SELECTED' : ''}
                 label={t.label}
+                interactive
               >
                 <button
                   type="button"

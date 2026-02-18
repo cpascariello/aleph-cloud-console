@@ -83,7 +83,7 @@ export function TemplateStep({
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {TEMPLATES.map((tpl) => (
-          <TerminalCard key={tpl.id} tag={tpl.category} label={tpl.name}>
+          <TerminalCard key={tpl.id} tag={tpl.category} label={tpl.name} interactive>
             <div className="flex flex-col gap-3 p-3">
               <Text variant="small">{tpl.description}</Text>
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
