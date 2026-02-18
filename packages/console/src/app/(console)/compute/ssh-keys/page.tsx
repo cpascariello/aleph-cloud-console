@@ -41,7 +41,7 @@ function truncateKey(key: string): string {
 }
 
 export default function SSHKeysPage() {
-  const { data: sshKeys = [], isLoading } = useSSHKeys()
+  const { data: sshKeys = [], isPending } = useSSHKeys()
   const deleteSSHKey = useDeleteSSHKey()
   const createSSHKey = useCreateSSHKey()
   const [showAdd, setShowAdd] = useState(false)
@@ -76,7 +76,7 @@ export default function SSHKeysPage() {
         </Button>
       </PageHeader>
 
-      {isLoading ? (
+      {isPending ? (
         <Skeleton variant="card" height="300px" />
       ) : list.isEmpty ? (
         <ResourceEmptyState

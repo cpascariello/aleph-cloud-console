@@ -31,7 +31,7 @@ type RowShape = {
 }
 
 export function ConfidentialTab() {
-  const { data: allInstances = [], isLoading } = useInstances()
+  const { data: allInstances = [], isPending } = useInstances()
   const deleteInstance = useDeleteInstance()
 
   const confidentialInstances = allInstances.filter(
@@ -53,7 +53,7 @@ export function ConfidentialTab() {
     },
   })
 
-  if (isLoading) {
+  if (isPending) {
     return <Skeleton variant="card" height="300px" />
   }
 

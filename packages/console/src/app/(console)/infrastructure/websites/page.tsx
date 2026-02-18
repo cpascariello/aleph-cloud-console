@@ -86,7 +86,7 @@ function WebsiteRowActions({
 }
 
 export default function WebsitesPage() {
-  const { data: websites = [], isLoading } = useWebsites()
+  const { data: websites = [], isPending } = useWebsites()
   const deleteWebsite = useDeleteWebsite()
   const { openDrawer, closeDrawer } = useDrawer()
   const searchParams = useSearchParams()
@@ -152,7 +152,7 @@ export default function WebsitesPage() {
         </Button>
       </PageHeader>
 
-      {isLoading ? (
+      {isPending ? (
         <Skeleton variant="card" height="300px" />
       ) : list.isEmpty ? (
         <ResourceEmptyState

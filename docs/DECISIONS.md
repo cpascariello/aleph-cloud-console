@@ -18,6 +18,12 @@ Each entry includes:
 
 ---
 
+## Decision #14 - 2026-02-18
+**Context:** All resource list pages (volumes, instances, programs, domains, SSH keys, websites) showed empty data with no loading indicator on page refresh or initial wallet connection. Queries fired immediately on mount before the wallet account resolved, caching empty results. React Query's invalidation (triggered when the account later resolved) raced with the in-flight initial fetch, and deduplication prevented a proper refetch with the authenticated manager.
+**Decision:** Gate all user-specific list queries with `enabled: !!accountAddress`, include the account address in query keys, and use `isPending` instead of `isLoading` in consuming components.
+**Rationale:** Three-layer fix: (1) `enabled` prevents queries from firing before the account is available, eliminating the race condition entirely. (2) Account address in query keys gives each account its own cache entry, preventing stale data when switching wallets. (3) `isPending` correctly shows skeleton states both when the query is disabled (waiting for account) and when it's actively fetching — `isLoading` (`isPending && isFetching`) is false when disabled, which would incorrectly show the empty state.
+**Alternatives considered:** Only using `invalidateQueries` with `cancelRefetch: true` (rejected: still races if the initial fetch hasn't started yet). Adding `enabled: isConnected` (rejected: `isConnected` becomes true before the account resolves, leaving a timing gap). Removing `staleTime` (rejected: treats the symptom, not the cause).
+
 ## Decision #13 - 2026-02-18
 **Context:** Dashboard redesign — deciding layout for connected vs disconnected wallet states.
 **Decision:** Two-column layout when connected (main content + 320px sticky sidebar). Single-column marketing page when disconnected showing public network stats and connect CTA.

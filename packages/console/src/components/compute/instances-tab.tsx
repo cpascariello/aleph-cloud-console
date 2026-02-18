@@ -28,7 +28,7 @@ type RowShape = {
 }
 
 export function InstancesTab() {
-  const { data: instances = [], isLoading } = useInstances()
+  const { data: instances = [], isPending } = useInstances()
   const deleteInstance = useDeleteInstance()
 
   const list = useResourceList<Instance>({
@@ -46,7 +46,7 @@ export function InstancesTab() {
     },
   })
 
-  if (isLoading) {
+  if (isPending) {
     return <Skeleton variant="card" height="300px" />
   }
 

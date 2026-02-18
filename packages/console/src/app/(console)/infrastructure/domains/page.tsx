@@ -79,7 +79,7 @@ function DomainRowActions({
 }
 
 export default function DomainsPage() {
-  const { data: domains = [], isLoading } = useDomains()
+  const { data: domains = [], isPending } = useDomains()
   const deleteDomain = useDeleteDomain()
   const { openDrawer, closeDrawer } = useDrawer()
   const searchParams = useSearchParams()
@@ -144,7 +144,7 @@ export default function DomainsPage() {
         </Button>
       </PageHeader>
 
-      {isLoading ? (
+      {isPending ? (
         <Skeleton variant="card" height="300px" />
       ) : list.isEmpty ? (
         <ResourceEmptyState

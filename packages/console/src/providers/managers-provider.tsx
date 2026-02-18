@@ -12,7 +12,11 @@ import { useQueryClient } from '@tanstack/react-query'
 import { createManagers, type AlephManagers, type Account } from 'aleph-sdk'
 import { useWallet } from '@/providers/wallet-provider'
 
-const ManagersContext = createContext<AlephManagers | null>(null)
+type ManagersContextValue = AlephManagers & {
+  accountAddress: string | undefined
+}
+
+const ManagersContext = createContext<ManagersContextValue | null>(null)
 
 export function ManagersProvider({ children }: { children: ReactNode }) {
   const { isConnected, getAlephAccount } = useWallet()
@@ -41,16 +45,21 @@ export function ManagersProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient()
   const managers = useMemo(() => createManagers(account), [account])
 
+  const value: ManagersContextValue = useMemo(
+    () => ({ ...managers, accountAddress: account?.address }),
+    [managers, account],
+  )
+
   useEffect(() => {
     if (account) {
       queryClient.invalidateQueries()
     }
   }, [account, queryClient])
 
-  return <ManagersContext value={managers}>{children}</ManagersContext>
+  return <ManagersContext value={value}>{children}</ManagersContext>
 }
 
-export function useManagers(): AlephManagers {
+export function useManagers(): ManagersContextValue {
   const ctx = useContext(ManagersContext)
   if (!ctx) {
     throw new Error('useManagers must be used within ManagersProvider')

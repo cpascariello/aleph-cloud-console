@@ -8,11 +8,12 @@ export const volumeKeys = {
 }
 
 export function useVolumes() {
-  const { volumeManager } = useManagers()
+  const { volumeManager, accountAddress } = useManagers()
 
   return useQuery<Volume[]>({
-    queryKey: volumeKeys.all,
+    queryKey: [...volumeKeys.all, accountAddress],
     queryFn: () => volumeManager.getAll(),
+    enabled: !!accountAddress,
     refetchInterval: 30_000,
   })
 }

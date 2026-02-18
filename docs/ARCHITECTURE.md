@@ -55,6 +55,8 @@ aleph-cloud-console/          # Monorepo root
 **Key files:** `packages/console/src/hooks/queries/`, `packages/console/src/hooks/mutations/`
 **Notes:** No Redux or global store. URL params for UI state (filters, pagination).
 
+**Account-gated queries:** All user-specific list queries (`useVolumes`, `useInstances`, `usePrograms`, `useDomains`, `useSSHKeys`, `useWebsites`) are gated with `enabled: !!accountAddress` and include the account address in their query key. This prevents queries from firing before the wallet account resolves (race condition with auto-reconnect) and ensures each account gets its own cache entry. Public queries (`useNetworkStats`, `usePricing`) have no account gate. Components consuming gated queries use `isPending` (not `isLoading`) for skeleton states — `isPending` is true both when the query is disabled (waiting for account) and when it's actively fetching for the first time.
+
 ### Wizard Pattern
 **Context:** Resource creation involves multi-step forms with validation, cost estimation, and blockchain signing.
 **Approach:** Hybrid approach — simple wizards (volume, domain, website, ≤3 steps) render in a side-panel drawer for in-context creation, while complex wizards (instance, 5+ steps) stay full-page with wider layout (`max-w-5xl`). `WizardShell` accepts a `variant` prop (`'page'` | `'drawer'`) that controls chrome rendering. Wizard logic is extracted into content components (`VolumeWizardContent`, `DomainWizardContent`, `WebsiteWizardContent`) that render in both contexts. `useWizard` hook manages step state, per-step validation, and localStorage draft auto-save.
@@ -83,7 +85,7 @@ Examples:
 
 ### Wallet Connection Pattern
 **Context:** Users connect wallets to sign transactions and pay for resources. Support 4 chains: ETH, AVAX, BASE, SOL.
-**Approach:** Reown AppKit initialized at module scope (SSR-safe). `WalletProvider` wraps the app and exposes `WalletState` via React context. `ManagersProvider` consumes `useWallet()` internally to resolve Aleph Account, then invalidates all React Query caches when the account changes so data refetches with the authenticated managers. Provider type guards (`isEip155Provider`, `isSolanaProvider`) distinguish EVM vs Solana wallets.
+**Approach:** Reown AppKit initialized at module scope (SSR-safe). `WalletProvider` wraps the app and exposes `WalletState` via React context. `ManagersProvider` consumes `useWallet()` internally to resolve Aleph Account, then invalidates all React Query caches when the account changes so data refetches with the authenticated managers. The managers context also exposes `accountAddress` so query hooks can gate on account availability and scope cache keys per account. Provider type guards (`isEip155Provider`, `isSolanaProvider`) distinguish EVM vs Solana wallets.
 **Provider order:** `QueryProvider > WalletProvider > ManagersProvider > ThemeProvider > ToastProvider`
 **Key files:** `packages/console/src/providers/wallet-provider.tsx`, `packages/console/src/providers/managers-provider.tsx`, `packages/aleph-sdk/src/types/provider.ts`
 

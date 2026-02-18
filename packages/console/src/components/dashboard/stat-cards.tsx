@@ -16,15 +16,15 @@ export function DashboardStatCards() {
   const sshKeys = useSSHKeys()
   const websites = useWebsites()
 
-  const isLoading =
-    instances.isLoading ||
-    volumes.isLoading ||
-    programs.isLoading ||
-    domains.isLoading ||
-    sshKeys.isLoading ||
-    websites.isLoading
+  const isPending =
+    instances.isPending ||
+    volumes.isPending ||
+    programs.isPending ||
+    domains.isPending ||
+    sshKeys.isPending ||
+    websites.isPending
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
         {Array.from({ length: 6 }).map((_, i) => (

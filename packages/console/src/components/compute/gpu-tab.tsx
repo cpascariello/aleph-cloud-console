@@ -29,7 +29,7 @@ type RowShape = {
 }
 
 export function GpuTab() {
-  const { data: allInstances = [], isLoading } = useInstances()
+  const { data: allInstances = [], isPending } = useInstances()
   const deleteInstance = useDeleteInstance()
 
   const gpuInstances = allInstances.filter(
@@ -51,7 +51,7 @@ export function GpuTab() {
     },
   })
 
-  if (isLoading) {
+  if (isPending) {
     return <Skeleton variant="card" height="300px" />
   }
 

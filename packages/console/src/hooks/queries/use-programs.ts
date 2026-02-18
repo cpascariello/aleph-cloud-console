@@ -8,11 +8,12 @@ export const programKeys = {
 }
 
 export function usePrograms() {
-  const { programManager } = useManagers()
+  const { programManager, accountAddress } = useManagers()
 
   return useQuery<Program[]>({
-    queryKey: programKeys.all,
+    queryKey: [...programKeys.all, accountAddress],
     queryFn: () => programManager.getAll(),
+    enabled: !!accountAddress,
     refetchInterval: 30_000,
   })
 }

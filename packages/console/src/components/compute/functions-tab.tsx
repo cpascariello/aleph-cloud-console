@@ -77,7 +77,7 @@ function FunctionRowActions({
 }
 
 export function FunctionsTab() {
-  const { data: programs = [], isLoading } = usePrograms()
+  const { data: programs = [], isPending } = usePrograms()
   const deleteProgram = useDeleteProgram()
 
   const list = useResourceList<Program>({
@@ -95,7 +95,7 @@ export function FunctionsTab() {
     },
   })
 
-  if (isLoading) {
+  if (isPending) {
     return <Skeleton variant="card" height="300px" />
   }
 

@@ -40,8 +40,8 @@ export function ResourceHealth() {
   const programs = usePrograms()
   const websites = useWebsites()
 
-  const isLoading =
-    instances.isLoading || programs.isLoading || websites.isLoading
+  const isPending =
+    instances.isPending || programs.isPending || websites.isPending
 
   const rows = useMemo<HealthRow[]>(() => {
     const result: HealthRow[] = []
@@ -149,7 +149,7 @@ export function ResourceHealth() {
     return result
   }, [instances.data, programs.data, websites.data])
 
-  if (isLoading) {
+  if (isPending) {
     return <Skeleton variant="card" height="200px" />
   }
 

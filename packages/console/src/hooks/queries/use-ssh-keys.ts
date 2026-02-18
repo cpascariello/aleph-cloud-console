@@ -8,11 +8,12 @@ export const sshKeyKeys = {
 }
 
 export function useSSHKeys() {
-  const { sshKeyManager } = useManagers()
+  const { sshKeyManager, accountAddress } = useManagers()
 
   return useQuery<SSHKey[]>({
-    queryKey: sshKeyKeys.all,
+    queryKey: [...sshKeyKeys.all, accountAddress],
     queryFn: () => sshKeyManager.getAll(),
+    enabled: !!accountAddress,
     refetchInterval: 30_000,
   })
 }

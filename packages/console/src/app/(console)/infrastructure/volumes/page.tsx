@@ -99,7 +99,7 @@ function VolumeRowActions({
 }
 
 export default function VolumesPage() {
-  const { data: volumes = [], isLoading } = useVolumes()
+  const { data: volumes = [], isPending } = useVolumes()
   const { data: instances = [] } = useInstances()
   const { data: programs = [] } = usePrograms()
   const { data: websites = [] } = useWebsites()
@@ -199,7 +199,7 @@ export default function VolumesPage() {
         </Button>
       </PageHeader>
 
-      {isLoading ? (
+      {isPending ? (
         <Skeleton variant="card" height="300px" />
       ) : list.isEmpty ? (
         <ResourceEmptyState

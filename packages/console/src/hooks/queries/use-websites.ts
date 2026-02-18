@@ -8,11 +8,12 @@ export const websiteKeys = {
 }
 
 export function useWebsites() {
-  const { websiteManager } = useManagers()
+  const { websiteManager, accountAddress } = useManagers()
 
   return useQuery<Website[]>({
-    queryKey: websiteKeys.all,
+    queryKey: [...websiteKeys.all, accountAddress],
     queryFn: () => websiteManager.getAll(),
+    enabled: !!accountAddress,
     refetchInterval: 30_000,
   })
 }

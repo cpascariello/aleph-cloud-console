@@ -8,11 +8,12 @@ export const domainKeys = {
 }
 
 export function useDomains() {
-  const { domainManager } = useManagers()
+  const { domainManager, accountAddress } = useManagers()
 
   return useQuery<Domain[]>({
-    queryKey: domainKeys.all,
+    queryKey: [...domainKeys.all, accountAddress],
     queryFn: () => domainManager.getAll(),
+    enabled: !!accountAddress,
     refetchInterval: 30_000,
   })
 }

@@ -8,11 +8,12 @@ export const instanceKeys = {
 }
 
 export function useInstances() {
-  const { instanceManager } = useManagers()
+  const { instanceManager, accountAddress } = useManagers()
 
   return useQuery<Instance[]>({
-    queryKey: instanceKeys.all,
+    queryKey: [...instanceKeys.all, accountAddress],
     queryFn: () => instanceManager.getAll(),
+    enabled: !!accountAddress,
     refetchInterval: 30_000,
   })
 }
