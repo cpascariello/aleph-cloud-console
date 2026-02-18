@@ -18,6 +18,12 @@ Each entry includes:
 
 ---
 
+## Decision #9 - 2026-02-18
+**Context:** The console dev server ran `next dev --webpack` because a custom `ContextualAliasPlugin` resolved `@/` imports contextually for data-terminal source files. Turbopack has no per-file conditional resolver.
+**Decision:** Migrate to Turbopack by standardizing data-terminal's internal imports on the `@dt/` prefix (already used by console to import DT components). Delete the ContextualAliasPlugin, replace webpack config with `turbopack.resolveAlias`, remove `--webpack` flag.
+**Rationale:** Turbopack is significantly faster for dev compilation. The `@dt/` prefix already exists as the console's alias convention for data-terminal — reusing it internally eliminates the collision without introducing new conventions. TypeScript catches any missed renames since data-terminal's tsconfig no longer maps `@/*`.
+**Alternatives considered:** Relative imports in data-terminal (noisier, 140+ edits for worse DX), new `@dt-internal/` prefix (new convention), pre-building data-terminal (adds build step, loses hot-reload)
+
 ## Decision #8 - 2026-02-17
 **Context:** Tailwind CSS 4 produced zero styling in the browser — all directives (`@import "tailwindcss"`, `@source`, `@theme inline`, `@apply`) passed through raw and unprocessed.
 **Decision:** Add `postcss` as an explicit devDependency and use `postcss.config.cjs` (CommonJS) instead of `.mjs`.

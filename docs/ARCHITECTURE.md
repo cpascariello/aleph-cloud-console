@@ -89,11 +89,11 @@ aleph-cloud-console/          # Monorepo root
 **Key files:** `packages/console/src/app/(console)/compute/[id]/page.tsx`, `packages/console/src/components/compute/detail/`, `packages/console/src/app/(console)/infrastructure/*/[id]/page.tsx`
 **Notes:** Volume delete uses `highRisk` prop on `DeleteConfirmationModal` for type-to-confirm. Instance actions (start/stop/reboot) use `useInstanceActions` mutation hook.
 
-### Tailwind CSS 4 + Webpack PostCSS
-**Context:** Next.js 16 webpack mode with pnpm monorepo. Tailwind CSS 4 uses `@tailwindcss/postcss` plugin.
-**Approach:** `postcss` must be an explicit devDependency (pnpm doesn't hoist transitive deps). Config must be `.cjs` format (`postcss.config.cjs`) to avoid ESM resolution issues with webpack's postcss-loader. The `@source` directive in `globals.css` tells Tailwind to scan data-terminal source files for utility classes.
-**Key files:** `packages/console/postcss.config.cjs`, `packages/console/src/app/globals.css`
-**Notes:** Without explicit `postcss`, the PostCSS pipeline silently skips processing — all Tailwind directives pass through raw to the browser with no error.
+### Tailwind CSS 4 + Turbopack
+**Context:** Next.js 16 with pnpm monorepo. Tailwind CSS 4 uses `@tailwindcss/postcss` plugin.
+**Approach:** `postcss` must be an explicit devDependency (pnpm doesn't hoist transitive deps). Config must be `.cjs` format (`postcss.config.cjs`). The `@source` directive in `globals.css` tells Tailwind to scan data-terminal source files for utility classes. `@dt/*` aliases are configured via `turbopack.resolveAlias` in `next.config.ts`. Node.js built-in stubs (fs, net, tls, os, path) use `{ browser: "./src/lib/empty.ts" }` conditionals for client bundles.
+**Key files:** `packages/console/postcss.config.cjs`, `packages/console/src/app/globals.css`, `packages/console/next.config.ts`
+**Notes:** data-terminal uses `@dt/` as its internal import prefix (not `@/`), matching the aliases the console configures. This avoids the path collision that previously required a custom webpack resolver plugin. The `outputFileTracingRoot` is dynamically computed to encompass both the monorepo and the symlinked data-terminal target. `typescript: { ignoreBuildErrors: true }` is set because the wider root exposes pre-existing data-terminal type errors — the console's `pnpm typecheck` script handles type checking properly.
 
 ---
 

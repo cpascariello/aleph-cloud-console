@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useManagers } from '@/hooks/use-managers'
-import { useToast } from '@/providers/toast-provider'
+import { useToast } from '@dt/providers/toast-provider'
 import { sshKeyKeys } from '@/hooks/queries/use-ssh-keys'
 import type { AddSSHKey } from 'aleph-sdk'
 

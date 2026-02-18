@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --webpack --port 3000",
+    "dev": "next dev --port 3000",
     "build": "next build",
     "start": "next start",
     "typecheck": "bash -c 'out=$(tsc --noEmit 2>&1); console_errors=$(echo \"$out\" | grep \"error TS\" | grep -v \"../data-terminal/\"); if [ -n \"$console_errors\" ]; then echo \"$out\"; exit 1; fi'",

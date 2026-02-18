@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useManagers } from '@/hooks/use-managers'
-import { useToast } from '@/providers/toast-provider'
+import { useToast } from '@dt/providers/toast-provider'
 import { instanceKeys } from '@/hooks/queries/use-instances'
 import { volumeKeys } from '@/hooks/queries/use-volumes'
 import { domainKeys } from '@/hooks/queries/use-domains'
