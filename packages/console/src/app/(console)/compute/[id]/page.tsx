@@ -1,16 +1,28 @@
 'use client'
 
-import { use } from 'react'
+import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { TerminalTabs, Skeleton } from '@/components/data-terminal'
+import {
+  Badge,
+  Button,
+  CopyButton,
+  GlowLine,
+  HudLabel,
+  Skeleton,
+  StatusDot,
+  TerminalCard,
+  TerminalTabs,
+} from '@/components/data-terminal'
+import { DeleteConfirmationModal } from '@/components/resources/delete-confirmation-modal'
 import { PageHeader } from '@/components/shell/page-header'
-import { DetailHeader } from '@/components/compute/detail/detail-header'
 import { OverviewTab } from '@/components/compute/detail/overview-tab'
 import { LogsTab } from '@/components/compute/detail/logs-tab'
 import { NetworkingTab } from '@/components/compute/detail/networking-tab'
 import { SettingsTab } from '@/components/compute/detail/settings-tab'
 import { useInstance } from '@/hooks/queries/use-instances'
 import { useDeleteInstance } from '@/hooks/mutations/use-delete-resource'
+import { formatDate, truncateHash } from '@/lib/format'
+import { Play, RotateCcw, Server, Square, Trash2 } from 'lucide-react'
 
 export default function InstanceDetailPage({
   params,
@@ -21,6 +33,7 @@ export default function InstanceDetailPage({
   const router = useRouter()
   const { data: instance, isLoading } = useInstance(id)
   const deleteInstance = useDeleteInstance()
+  const [showDelete, setShowDelete] = useState(false)
 
   if (isLoading) {
     return (
@@ -45,42 +58,195 @@ export default function InstanceDetailPage({
     })
   }
 
+  const vcpus = String(
+    (instance as Record<string, unknown>)['vcpus'] ?? '—',
+  )
+  const memory = String(
+    (instance as Record<string, unknown>)['memory'] ?? '—',
+  )
+  const volumes = (
+    (instance as Record<string, unknown>)['volumes'] as
+      | Array<{ ref?: string; name?: string }>
+      | undefined
+  ) ?? []
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader />
-      <DetailHeader
-        name={instance.name}
-        id={instance.id}
-        confirmed={instance.confirmed}
-        onDelete={handleDelete}
-        isDeleting={deleteInstance.isPending}
-        actions
-      />
-      <TerminalTabs
-        tabs={[
-          {
-            label: 'Overview',
-            content: <OverviewTab instance={instance} />,
-          },
-          {
-            label: 'Logs',
-            content: <LogsTab instanceId={instance.id} />,
-          },
-          {
-            label: 'Networking',
-            content: <NetworkingTab instance={instance} />,
-          },
-          {
-            label: 'Settings',
-            content: (
-              <SettingsTab
-                instance={instance}
-                onDelete={handleDelete}
-                isDeleting={deleteInstance.isPending}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px]">
+        {/* Main content */}
+        <div className="flex flex-col gap-6">
+          {/* Header */}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-4">
+              <Server size={24} className="text-accent" />
+              <h1 className="text-2xl font-heading">
+                {instance.name || truncateHash(instance.id)}
+              </h1>
+              <StatusDot
+                variant={instance.confirmed ? 'success' : 'warning'}
               />
-            ),
-          },
-        ]}
+              <Badge
+                variant={instance.confirmed ? 'success' : 'warning'}
+              >
+                {instance.confirmed ? 'Running' : 'Pending'}
+              </Badge>
+            </div>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <HudLabel>ID</HudLabel>
+                <span className="font-mono">
+                  {truncateHash(instance.id)}
+                </span>
+                <CopyButton text={instance.id} />
+              </div>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <TerminalTabs
+            tabs={[
+              {
+                label: 'Overview',
+                content: <OverviewTab instance={instance} />,
+              },
+              {
+                label: 'Logs',
+                content: <LogsTab instanceId={instance.id} />,
+              },
+              {
+                label: 'Networking',
+                content: <NetworkingTab instance={instance} />,
+              },
+              {
+                label: 'Settings',
+                content: (
+                  <SettingsTab
+                    instance={instance}
+                    onDelete={() => setShowDelete(true)}
+                    isDeleting={deleteInstance.isPending}
+                  />
+                ),
+              },
+            ]}
+          />
+        </div>
+
+        {/* Sidebar */}
+        <div className="flex flex-col gap-6 lg:sticky lg:top-6 lg:self-start">
+          <TerminalCard tag="INFO" label="Summary">
+            <div className="flex flex-col gap-3 p-4">
+              <div className="flex items-center gap-3 text-sm">
+                <HudLabel>Status</HudLabel>
+                <div className="flex items-center gap-2">
+                  <StatusDot
+                    variant={
+                      instance.confirmed ? 'success' : 'warning'
+                    }
+                  />
+                  <span>
+                    {instance.confirmed ? 'Running' : 'Pending'}
+                  </span>
+                </div>
+              </div>
+              <GlowLine />
+              <div className="flex items-center gap-3 text-sm">
+                <HudLabel>CPU</HudLabel>
+                <span>{vcpus} vCPU</span>
+              </div>
+              <GlowLine />
+              <div className="flex items-center gap-3 text-sm">
+                <HudLabel>RAM</HudLabel>
+                <span>{memory} MB</span>
+              </div>
+              <GlowLine />
+              <div className="flex items-center gap-3 text-sm">
+                <HudLabel>Storage</HudLabel>
+                <span>
+                  {instance.size ? `${instance.size} MB` : '—'}
+                </span>
+              </div>
+              <GlowLine />
+              <div className="flex items-center gap-3 text-sm">
+                <HudLabel>Created</HudLabel>
+                <span>{formatDate(instance.date)}</span>
+              </div>
+            </div>
+          </TerminalCard>
+
+          <TerminalCard tag="CMD" label="Actions">
+            <div className="flex flex-col gap-2 p-4">
+              <Button
+                variant="secondary"
+                size="sm"
+                iconLeft={<Play size={14} />}
+                className="w-full justify-start"
+              >
+                Start
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                iconLeft={<Square size={14} />}
+                className="w-full justify-start"
+              >
+                Stop
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                iconLeft={<RotateCcw size={14} />}
+                className="w-full justify-start"
+              >
+                Reboot
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                iconLeft={<Trash2 size={14} />}
+                className="w-full justify-start"
+                onClick={() => setShowDelete(true)}
+              >
+                Delete Instance
+              </Button>
+            </div>
+          </TerminalCard>
+
+          {volumes.length > 0 && (
+            <TerminalCard tag="LINKS" label="Related">
+              <div className="flex flex-col gap-3 p-4">
+                {volumes.map((vol, i) => (
+                  <div
+                    key={vol.ref ?? i}
+                    className="flex items-center gap-3 text-sm"
+                  >
+                    <StatusDot variant="success" />
+                    <Badge variant="info">Volume</Badge>
+                    <span className="font-mono text-xs truncate">
+                      {vol.name ||
+                        (vol.ref
+                          ? truncateHash(vol.ref)
+                          : `Volume ${i + 1}`)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </TerminalCard>
+          )}
+        </div>
+      </div>
+
+      <DeleteConfirmationModal
+        isOpen={showDelete}
+        onClose={() => setShowDelete(false)}
+        onConfirm={() => {
+          handleDelete()
+          setShowDelete(false)
+        }}
+        resourceName={instance.name || instance.id}
+        resourceType="Instance"
+        highRisk
+        isDeleting={deleteInstance.isPending}
       />
     </div>
   )

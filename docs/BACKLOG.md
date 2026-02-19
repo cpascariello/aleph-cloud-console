@@ -45,10 +45,6 @@ Ideas and scope creep captured for later consideration.
 **Description:** The live console shows previous versions with redeploy actions and legacy gateway URLs. Our redesign covers the current version only. Add a "Previous Versions" section that lists volume history entries with version numbers, sizes, and redeploy buttons.
 **Priority:** Medium
 
-### 2026-02-19 - Two-column card layout for all detail pages
-**Source:** Identified during website detail page layout improvement
-**Description:** Apply the two-column card grid pattern used on the website detail page to all resource detail pages (instance, volume, domain). Layout: one full-width card at the top, then a `grid-cols-1 lg:grid-cols-2` grid for remaining cards below. Each page will need its own grouping logic based on which cards it has.
-**Priority:** Medium
 
 ### 2026-02-19 - Fix TypeScript errors in data-terminal button.tsx
 **Source:** Identified during website detail page typecheck
@@ -63,6 +59,10 @@ Ideas and scope creep captured for later consideration.
 ---
 
 ## Completed / Rejected
+
+### 2026-02-19 - Unified detail page template for all resources
+**Completed:** 2026-02-19
+**Delivered:** All four detail pages (domain, volume, website, instance) refactored to a unified layout: dashboard-style sidebar (`grid-cols-[1fr_320px]`) with Info Summary, Actions, and Related Resources cards. Standardized tabs (Overview + Settings minimum). Consistent header pattern. Delete moved from header to sidebar + Settings danger zone. Removed unused `DetailHeader` component.
 
 ### 2026-02-18 - Fix Next.js 16 Turbopack config for external symlink
 **Completed:** 2026-02-18

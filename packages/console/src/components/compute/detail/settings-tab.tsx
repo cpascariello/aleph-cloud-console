@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import {
   Alert,
   Button,
@@ -9,7 +8,6 @@ import {
   TerminalCard,
   Text,
 } from '@/components/data-terminal'
-import { DeleteConfirmationModal } from '@/components/resources/delete-confirmation-modal'
 import type { Instance } from 'aleph-sdk'
 import { Trash2 } from 'lucide-react'
 
@@ -24,8 +22,6 @@ export function SettingsTab({
   onDelete,
   isDeleting,
 }: SettingsTabProps) {
-  const [showDelete, setShowDelete] = useState(false)
-
   return (
     <div className="flex flex-col gap-4">
       <TerminalCard tag="CONFIG" label="Configuration">
@@ -62,26 +58,14 @@ export function SettingsTab({
               variant="primary"
               size="sm"
               iconLeft={<Trash2 size={14} />}
-              onClick={() => setShowDelete(true)}
+              onClick={onDelete}
+              disabled={isDeleting}
             >
               Delete Instance
             </Button>
           </div>
         </div>
       </TerminalCard>
-
-      <DeleteConfirmationModal
-        isOpen={showDelete}
-        onClose={() => setShowDelete(false)}
-        onConfirm={() => {
-          onDelete()
-          setShowDelete(false)
-        }}
-        resourceName={instance.name || instance.id}
-        resourceType="Instance"
-        highRisk
-        isDeleting={isDeleting}
-      />
     </div>
   )
 }
