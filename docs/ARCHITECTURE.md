@@ -121,6 +121,12 @@ Examples:
 
 **Cross-entity health checks:** When a resource depends on another (e.g., website → volume), both list and detail pages should detect missing dependencies. The website list page fetches all volumes via `useVolumes`, builds a `Set<string>` of volume IDs, and renders a `StatusDot` + label ("Live" / "Volume Missing") per row. The detail page captures `isError` from `useVolume` and shows a "Volume Missing" badge in the header, "Unavailable" for size, and a warning `Alert` in the version card with the volume ID as copyable text (not a link). Gateway cards naturally hide when volume is missing since `cidV1` is null.
 
+### Connection Methods & CRN Status Pattern
+**Context:** Instance detail pages need to display IPv4/IPv6 addresses, SSH commands, and port forwarding. This data lives on the CRN (Compute Resource Node), not in the Aleph message.
+**Approach:** `useExecutableStatus(instance)` polls `instanceManager.checkStatus(instance)` every 30s via React Query. `checkStatus` resolves the CRN via the scheduler API (hold payment) or node catalog (stream payment), then calls the CRN's execution list endpoint (v2 with v1 fallback). Returns `ExecutableStatus` with IPs, mapped ports, and lifecycle timestamps. `useForwardedPorts(instanceId, executableStatus)` fetches user-configured port rules from the Aleph aggregate via `ForwardedPortsManager`, merges with CRN `mappedPorts` to produce a flat `ForwardedPort[]`. SSH commands are formatted by pure helpers in `lib/ssh.ts`.
+**Key files:** `packages/console/src/hooks/queries/use-executable-status.ts`, `packages/console/src/hooks/queries/use-forwarded-ports.ts`, `packages/console/src/lib/ssh.ts`, `packages/console/src/components/compute/detail/connection-methods.tsx`, `packages/console/src/components/compute/detail/port-forwarding-table.tsx`
+**Notes:** `checkStatus` returns `undefined` when no CRN allocation exists (instance not running) — the hook coalesces this to `null` for React Query compatibility. The UI distinguishes two failure modes: not allocated (informational, `CircleOff` icon) vs CRN unreachable (warning, `AlertTriangle` icon). IPv6 SSH commands omit the port flag (direct connection). IPv4 uses the forwarded port for SSH (source 22 → host port). Port forwarding is read-only display; management (add/remove) is deferred.
+
 ### Aleph Volumes and IPFS Hashes
 **Context:** Websites (and other resources) reference volumes by ID, and volumes contain IPFS content. There are two distinct hashes involved that are easy to confuse.
 **Approach:** Understand the two-hash system:

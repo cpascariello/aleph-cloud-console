@@ -231,7 +231,8 @@ Generic, reusable UI components (navigation, layout, data display) belong in the
 - Wizard shell: useWizard hook with step state, validation, localStorage auto-save, progress bar, back/next footer
 - Instance creation wizard: 5 steps (template, configure, access, networking, review) + deploy progress terminal
 - Volume creation wizard (2 steps), Domain creation wizard (2 steps), Website creation wizard (3 steps)
-- Instance detail page: 5-tab layout (overview with instance details + SSH keys, logs terminal, networking/volumes, payment type/chain, settings/danger zone) with start/stop/reboot/delete actions
+- Instance detail page: 5-tab layout (overview with instance details + SSH keys, logs terminal, networking with connection methods/port forwarding/volumes/domains, payment type/chain, settings/danger zone) with start/stop/reboot/delete actions
+- Connection methods: IPv4/IPv6 tabs with SSH commands and IP addresses (copyable), CRN status polling (30s), two error states (not allocated vs CRN unreachable), read-only port forwarding table
 - Volume detail page: size, dates, delete with high-risk confirmation
 - Domain detail page: DNS configuration code block, linked resource info, delete
 - Website detail page: two-column card layout (ACCESS cards left, VERSION card right on lg+), info row (framework, version, size, dates), default gateway URL (CIDv1), alternative gateways template, ENS gateways setup instructions, current version card (volume link, item hash, IPFS CID v0/v1), volume missing detection (error badge, warning alert, unavailable size), delete

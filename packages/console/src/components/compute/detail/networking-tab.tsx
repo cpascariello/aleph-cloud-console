@@ -7,9 +7,13 @@ import {
   TerminalCard,
   Text,
 } from '@/components/data-terminal'
+import { ConnectionMethods } from '@/components/compute/detail/connection-methods'
+import { PortForwardingTable } from '@/components/compute/detail/port-forwarding-table'
 import { VolumeWizardContent } from '@/components/infrastructure/volume-wizard-content'
 import { DomainWizardContent } from '@/components/infrastructure/domain-wizard-content'
 import { useDrawer } from '@/hooks/use-drawer'
+import { useExecutableStatus } from '@/hooks/queries/use-executable-status'
+import { useForwardedPorts } from '@/hooks/queries/use-forwarded-ports'
 import { truncateHash } from '@/lib/format'
 import type { Instance } from 'aleph-sdk'
 import { Globe, HardDrive, Plus } from 'lucide-react'
@@ -20,6 +24,16 @@ interface NetworkingTabProps {
 
 export function NetworkingTab({ instance }: NetworkingTabProps) {
   const { openDrawer, closeDrawer } = useDrawer()
+  const {
+    data: rawStatus,
+    isPending: statusPending,
+    isError: statusError,
+  } = useExecutableStatus(instance)
+  const executableStatus = rawStatus ?? undefined
+  const { ports, isPending: portsPending } = useForwardedPorts(
+    instance.id,
+    executableStatus,
+  )
 
   const volumes = (
     (instance as Record<string, unknown>)['volumes'] as
@@ -58,6 +72,18 @@ export function NetworkingTab({ instance }: NetworkingTabProps) {
 
   return (
     <div className="flex flex-col gap-4">
+      <ConnectionMethods
+        status={executableStatus}
+        ports={ports}
+        isPending={statusPending}
+        isError={statusError}
+      />
+
+      <PortForwardingTable
+        ports={ports}
+        isPending={statusPending || portsPending}
+      />
+
       <TerminalCard tag="STORAGE" label="Volumes">
         <div className="flex flex-col gap-3 p-4">
           {volumes.length === 0 ? (

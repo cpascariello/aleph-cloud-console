@@ -10,3 +10,8 @@ export {
   networkStatsKeys,
   type NetworkStats,
 } from '@/hooks/queries/use-network-stats'
+export {
+  useForwardedPorts,
+  mergePortsWithMappings,
+  type ForwardedPort,
+} from '@/hooks/queries/use-forwarded-ports'

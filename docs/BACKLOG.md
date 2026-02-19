@@ -15,10 +15,15 @@ Ideas and scope creep captured for later consideration.
 
 ## Open Items
 
-### 2026-02-19 - Instance detail: Connection methods (IPv4/IPv6 + port forwarding)
-**Source:** Comparison with live console (v1) — screenshot 02
-**Description:** Add Connection Methods section with IPv4/IPv6 tabs. Each tab shows SSH command (copyable) and the IP address. IPv4 tab also shows port forwarding table (source/destination, TCP/UDP toggles, Add button). Requires fetching execution status from CRN to get allocated IPs and mapped ports.
+### 2026-02-19 - Instance status badge should reflect CRN execution state
+**Source:** Identified during connection methods implementation
+**Description:** The "Running"/"Pending" badge on instance list and detail pages uses `instance.confirmed` (message confirmed on-chain), not actual CRN execution status. An instance can be confirmed but not allocated to any CRN. The real status comes from `ExecutableManager.checkStatus()` which calls the CRN. Fixing this requires either per-instance CRN status checks (expensive for list views) or a batch status endpoint. The connection methods card already fetches CRN status — that data could feed the detail page badge, but the list view needs a different approach.
 **Priority:** High
+
+### 2026-02-19 - Instance detail: Explorer link should point to wallet address
+**Source:** Identified during connection methods testing
+**Description:** The explorer link on the instance overview tab currently points to the instance `item_hash`, which doesn't show useful information on the explorer. It should either point to an explorer page with relevant instance information, or fall back to the wallet address explorer page (e.g., `https://explorer.aleph.im/address/{sender}`). Requires checking what the Aleph explorer supports for instance/message views and updating `getExplorerURL` in the SDK accordingly.
+**Priority:** Low
 
 ### 2026-02-19 - Instance detail: Live logs with wallet signature
 **Source:** Comparison with live console (v1) — screenshot 03
@@ -79,6 +84,10 @@ Ideas and scope creep captured for later consideration.
 ---
 
 ## Completed / Rejected
+
+### 2026-02-19 - Instance detail: Connection methods (IPv4/IPv6 + port forwarding)
+**Completed:** 2026-02-19
+**Delivered:** Networking tab now shows Connection Methods card (IPv4/IPv6 tabs with SSH commands + IP addresses, copy buttons) and Port Forwarding table (read-only source/dest/protocol). Uses `useExecutableStatus` hook (30s CRN polling) and `useForwardedPorts` hook (aggregate + CRN merge). Two distinct error states: not allocated vs CRN unreachable. Port management (add/remove) deferred.
 
 ### 2026-02-19 - Instance detail: General information section
 **Completed:** 2026-02-19
