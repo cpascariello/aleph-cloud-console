@@ -66,11 +66,6 @@ Ideas and scope creep captured for later consideration.
 **Priority:** Medium
 
 
-### 2026-02-19 - Fix TypeScript errors in data-terminal button.tsx
-**Source:** Identified during website detail page typecheck
-**Description:** Two pre-existing type errors in `data-terminal/src/molecules/button.tsx:89`. These are in the design system repo, not the console. They don't block dev or build (transpiled as source), but they fail `tsc --noEmit` for the console package.
-**Priority:** Low
-
 ### 2026-02-17 - Multi-account support
 **Source:** Not in current scope but frequently requested
 **Description:** Support switching between multiple wallet accounts without disconnecting. Shared dashboard across accounts.
@@ -79,6 +74,10 @@ Ideas and scope creep captured for later consideration.
 ---
 
 ## Completed / Rejected
+
+### 2026-02-19 - Fix TypeScript errors in data-terminal button.tsx
+**Completed:** 2026-02-19
+**Delivered:** Removed `forwardRef` from Button component in data-terminal. React 19 passes ref as a regular prop, making `forwardRef` unnecessary. The wrapper caused TS2322 when the console compiled data-terminal as source — two separate `@types/react` installs produced nominally different `Ref` types.
 
 ### 2026-02-19 - Instance status badge should reflect CRN execution state
 **Completed:** 2026-02-19
