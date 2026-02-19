@@ -45,6 +45,16 @@ Ideas and scope creep captured for later consideration.
 **Description:** The live console shows previous versions with redeploy actions and legacy gateway URLs. Our redesign covers the current version only. Add a "Previous Versions" section that lists volume history entries with version numbers, sizes, and redeploy buttons.
 **Priority:** Medium
 
+### 2026-02-19 - Two-column card layout for all detail pages
+**Source:** Identified during website detail page layout improvement
+**Description:** Apply the two-column card grid pattern used on the website detail page to all resource detail pages (instance, volume, domain). Layout: one full-width card at the top, then a `grid-cols-1 lg:grid-cols-2` grid for remaining cards below. Each page will need its own grouping logic based on which cards it has.
+**Priority:** Medium
+
+### 2026-02-19 - Fix TypeScript errors in data-terminal button.tsx
+**Source:** Identified during website detail page typecheck
+**Description:** Two pre-existing type errors in `data-terminal/src/molecules/button.tsx:89`. These are in the design system repo, not the console. They don't block dev or build (transpiled as source), but they fail `tsc --noEmit` for the console package.
+**Priority:** Low
+
 ### 2026-02-17 - Multi-account support
 **Source:** Not in current scope but frequently requested
 **Description:** Support switching between multiple wallet accounts without disconnecting. Shared dashboard across accounts.
