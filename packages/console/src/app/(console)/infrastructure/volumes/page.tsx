@@ -1,12 +1,13 @@
 'use client'
 
-import { type ReactNode, Suspense, useEffect, useMemo, useState } from 'react'
+import { type ReactNode, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 import {
   DataTable,
   Badge,
   Checkbox,
+  Select,
   Skeleton,
   Button,
   IconButton,
@@ -51,6 +52,11 @@ const filterOptions: FilterOption[] = [
   { value: VolumeType.New, label: 'New' },
   { value: VolumeType.Existing, label: 'Existing' },
   { value: VolumeType.Persistent, label: 'Persistent' },
+]
+
+const linkedFilterOptions: FilterOption[] = [
+  { value: 'yes', label: 'Linked' },
+  { value: 'no', label: 'Unlinked' },
 ]
 
 function VolumeRowActions({
@@ -128,8 +134,35 @@ export default function VolumesPage() {
 
     return ids
   }, [instances, programs, websites])
+
   const searchParams = useSearchParams()
   const router = useRouter()
+  const linkedFilter = searchParams.get('linked') ?? ''
+
+  const filteredByLinked = useMemo(() => {
+    if (linkedFilter === 'yes')
+      return volumes.filter((v) => linkedVolumeIds.has(v.id))
+    if (linkedFilter === 'no')
+      return volumes.filter((v) => !linkedVolumeIds.has(v.id))
+    return volumes
+  }, [volumes, linkedFilter, linkedVolumeIds])
+
+  const setLinkedFilter = useCallback(
+    (value: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      if (value) {
+        params.set('linked', value)
+      } else {
+        params.delete('linked')
+      }
+      params.delete('page')
+      router.replace(
+        `/infrastructure/volumes?${params.toString()}`,
+        { scroll: false },
+      )
+    },
+    [router, searchParams],
+  )
 
   useEffect(() => {
     if (searchParams.get('wizard') === 'volume') {
@@ -149,7 +182,7 @@ export default function VolumesPage() {
   }, [searchParams, openDrawer, closeDrawer, router])
 
   const list = useResourceList<Volume>({
-    items: volumes,
+    items: filteredByLinked,
     getId: (item) => item.id,
     searchFn: (item, query) =>
       item.id.toLowerCase().includes(query) ||
@@ -201,7 +234,7 @@ export default function VolumesPage() {
 
       {isPending ? (
         <Skeleton variant="card" height="300px" />
-      ) : list.isEmpty ? (
+      ) : volumes.length === 0 ? (
         <ResourceEmptyState
           resourceName="Volume"
           createHref="/infrastructure/volumes?wizard=volume"
@@ -217,7 +250,17 @@ export default function VolumesPage() {
               filterValue={list.filter}
               onFilter={list.setFilter}
               filterPlaceholder="All Types"
-            />
+            >
+              <Select
+                options={[
+                  { value: '', label: 'All Linked' },
+                  ...linkedFilterOptions,
+                ]}
+                value={linkedFilter}
+                onChange={setLinkedFilter}
+                className="w-48"
+              />
+            </ResourceFilterBar>
             <DataTable
               sortKey={list.sortKey || null}
               sortDir={list.sortDirection}

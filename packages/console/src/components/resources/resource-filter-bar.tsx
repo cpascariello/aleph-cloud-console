@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { SearchInput, Select } from '@/components/data-terminal'
 
 export interface FilterOption {
@@ -14,6 +15,7 @@ interface ResourceFilterBarProps {
   filterValue?: string
   onFilter?: (value: string) => void
   filterPlaceholder?: string
+  children?: ReactNode
 }
 
 export function ResourceFilterBar({
@@ -23,6 +25,7 @@ export function ResourceFilterBar({
   filterValue,
   onFilter,
   filterPlaceholder = 'All',
+  children,
 }: ResourceFilterBarProps) {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -42,6 +45,7 @@ export function ResourceFilterBar({
           className="w-48"
         />
       )}
+      {children}
     </div>
   )
 }
