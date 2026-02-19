@@ -138,6 +138,22 @@ Skills (superpowers) are tools, not separate processes. Use them naturally:
 - **Debugging state/sync bugs:** Before writing any fix, trace the full data flow (write -> store -> fetch -> parse -> render). Identify all integration points that need coordinated changes. Don't patch one step without understanding the chain.
 - **Post-implementation:** Run build/lint verification, handle git workflow, update ARCHITECTURE.md and DECISIONS.md if new patterns or decisions emerged.
 
+### Session Workflow
+
+Brainstorming, planning, and implementation happen across separate sessions:
+
+1. **Brainstorm + Plan (current session):** Explore design, write the plan to `docs/plans/`. This session ends after the plan is written.
+2. **Implement (new session):** Start a fresh session, say "sync up", then execute the plan using `executing-plans` or `subagent-driven-development`. The plan file on disk is the handoff artifact — no brainstorm context carries over.
+
+Why: brainstorm sessions accumulate rejected ideas, design exploration, and back-and-forth that wastes context window during implementation. A clean session starts with only what matters: the plan + project docs.
+
+### Plans Must Include Doc Updates
+
+Every implementation plan must include a final step for updating docs. This is not optional — it's part of the definition of done, not a merge-time afterthought.
+
+The final plan step should be:
+> **Update docs:** ARCHITECTURE.md (new patterns), DECISIONS.md (implementation decisions), BACKLOG.md (completed/deferred items), CLAUDE.md (Current Features list if user-facing behavior changed).
+
 ---
 
 ## Project: Aleph Cloud Console v2
