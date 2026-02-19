@@ -123,6 +123,14 @@ export default function WebsiteDetailPage({
             </div>
           </div>
 
+          {volumeError && (
+            <Alert variant="warning">
+              The volume backing this website has been forgotten or
+              deleted from the network. The website content is no
+              longer available.
+            </Alert>
+          )}
+
           {/* Tabs */}
           <TerminalTabs
             tabs={[
@@ -217,12 +225,6 @@ export default function WebsiteDetailPage({
                             <GlowLine />
                             {volumeError ? (
                               <>
-                                <Alert variant="warning">
-                                  The volume backing this website has
-                                  been forgotten or deleted from the
-                                  network. The website content is no
-                                  longer available.
-                                </Alert>
                                 <div className="flex items-center gap-3 text-sm">
                                   <HudLabel>Volume ID</HudLabel>
                                   <div className="flex items-center gap-2">
