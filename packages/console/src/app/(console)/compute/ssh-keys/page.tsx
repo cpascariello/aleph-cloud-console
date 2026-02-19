@@ -91,6 +91,9 @@ export default function SSHKeysPage() {
               onSearch={list.setSearch}
             />
             <DataTable
+              sortKey={list.sortKey || null}
+              sortDir={list.sortDirection}
+              onSortChange={list.setSorting}
               columns={[
                 { key: 'select', label: '' },
                 { key: 'label', label: 'Label', sortable: true },

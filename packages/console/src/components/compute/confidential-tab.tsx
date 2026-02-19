@@ -119,6 +119,9 @@ export function ConfidentialTab() {
           onSearch={list.setSearch}
         />
         <DataTable
+          sortKey={list.sortKey || null}
+          sortDir={list.sortDirection}
+          onSortChange={list.setSorting}
           columns={[
             { key: 'select', label: '' },
             { key: 'name', label: 'Name', sortable: true },

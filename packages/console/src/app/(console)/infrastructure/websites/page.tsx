@@ -184,6 +184,9 @@ export default function WebsitesPage() {
               filterPlaceholder="All Frameworks"
             />
             <DataTable
+              sortKey={list.sortKey || null}
+              sortDir={list.sortDirection}
+              onSortChange={list.setSorting}
               columns={[
                 { key: 'select', label: '' },
                 { key: 'name', label: 'Name', sortable: true },

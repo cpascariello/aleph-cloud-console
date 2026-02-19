@@ -219,6 +219,9 @@ export default function VolumesPage() {
               filterPlaceholder="All Types"
             />
             <DataTable
+              sortKey={list.sortKey || null}
+              sortDir={list.sortDirection}
+              onSortChange={list.setSorting}
               columns={[
                 { key: 'select', label: '' },
                 { key: 'name', label: 'Name', sortable: true },
