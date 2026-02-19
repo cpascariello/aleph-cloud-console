@@ -1,3 +1,5 @@
+import { CID } from 'multiformats/cid'
+
 /**
  * Convert a Unix timestamp or ISO string to a formatted date string.
  */
@@ -276,4 +278,11 @@ export class Mutex {
     await prev
     return release!
   }
+}
+
+/**
+ * Convert an IPFS CID v0 (Qm...) to CID v1 (bafy...).
+ */
+export function cidV0toV1(cid: string): string {
+  return CID.parse(cid).toV1().toString()
 }

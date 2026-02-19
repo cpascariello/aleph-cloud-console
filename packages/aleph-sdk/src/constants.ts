@@ -51,6 +51,7 @@ export const crnListProgramUrl = 'https://crns-list.aleph.sh/crns.json'
 export const websiteUrl = 'https://www.aleph.cloud'
 export const defaultVMURL = 'https://aleph.sh/vm/'
 export const programStorageURL = `${DEFAULT_API_SERVER}/api/v0/storage/raw/`
+export const ipfsGatewayBase = 'ipfs.aleph.sh'
 
 // Payment
 export const EXTRA_WEI = 3600 / 10 ** 18

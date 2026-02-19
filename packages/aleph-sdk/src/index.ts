@@ -29,6 +29,7 @@ export {
   blockchains,
   networks,
   programStorageURL,
+  ipfsGatewayBase,
 } from '@/constants'
 
 // Manager interfaces
@@ -93,4 +94,5 @@ export {
   isBlockchainPAYGCompatible,
   downloadBlob,
   Mutex,
+  cidV0toV1,
 } from '@/utils'

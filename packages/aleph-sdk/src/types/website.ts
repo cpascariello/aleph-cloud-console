@@ -27,14 +27,17 @@ export const WebsiteFrameworks: Record<WebsiteFrameworkId, WebsiteFramework> = {
 }
 
 export type WebsiteAggregateItem = {
-  type: 'website'
-  programType: 'website'
-  message_id: string
-  updated_at: string
-  framework?: WebsiteFrameworkId
-  name?: string
+  metadata?: {
+    name?: string
+    tags?: string[]
+    framework?: WebsiteFrameworkId
+  }
+  version?: number
   volume_id?: string
   volume_history?: string[]
+  ens?: string
+  created_at?: number | string
+  updated_at: number | string
 }
 
 export type WebsiteData = {
@@ -55,10 +58,13 @@ export type Website = {
   name: string
   url: string
   date: string
+  created_at: string
   updated_at: string
   size: number
+  version: number
   framework: WebsiteFrameworkId
   volume_id?: string
   volume_history?: string[]
+  ens?: string
   confirmed?: boolean
 }

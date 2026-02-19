@@ -119,6 +119,39 @@ Examples:
 **Key files:** `packages/console/src/app/(console)/compute/[id]/page.tsx`, `packages/console/src/components/compute/detail/`, `packages/console/src/app/(console)/infrastructure/*/[id]/page.tsx`
 **Notes:** Volume delete uses `highRisk` prop on `DeleteConfirmationModal` for type-to-confirm. Instance actions (start/stop/reboot) use `useInstanceActions` mutation hook.
 
+### Aleph Volumes and IPFS Hashes
+**Context:** Websites (and other resources) reference volumes by ID, and volumes contain IPFS content. There are two distinct hashes involved that are easy to confuse.
+**Approach:** Understand the two-hash system:
+- **Aleph message hash** (hex, 64 chars, e.g. `c23a24980ae6...`): The hash of the Aleph STORE message itself. This is what's stored as `volume_id` in website aggregates and used as `volume.id` when parsing. Used to look up the volume entity.
+- **IPFS CID** (CID v0 starts with `Qm`, CID v1 starts with `bafy`): The content hash on IPFS. This lives in the volume entity's `item_hash` field (from `StoreContent`, spread via `...content` in `VolumeManager.parseMessage`). Used for IPFS gateway URLs.
+
+**Data flow for website gateway URLs:**
+1. Website aggregate stores `volume_id` (Aleph message hash)
+2. Fetch the volume entity via `useVolume(website.volume_id)`
+3. Read `volume.item_hash` (the IPFS CID v0)
+4. Convert to CID v1 via `cidV0toV1(volume.item_hash)`
+5. Construct gateway URL: `https://${cidV1}.ipfs.aleph.sh`
+
+**Key files:** `packages/aleph-sdk/src/managers/volume.ts:297-312` (parseMessage), `packages/aleph-sdk/src/managers/website.ts:135` (volume_id assignment), `packages/aleph-sdk/src/utils.ts` (cidV0toV1)
+**Notes:** Never attempt CID conversion on `website.volume_id` or `volume.id` — these are hex hashes, not CIDs. The `VolumeManager.download` method also distinguishes between the two via `volume.item_type === 'ipfs'`.
+
+### Website Aggregate Structure
+**Context:** Website data is stored as an Aleph aggregate keyed by `websites`. The aggregate item structure differs from what you might expect based on the type name.
+**Approach:** The actual aggregate content (written by `WebsiteManager.addSteps`) has this shape:
+```typescript
+{
+  metadata: { name, tags, framework },  // NOT top-level fields
+  version: number,                      // starts at 1, incremented on update
+  volume_id: string,                    // Aleph message hash (hex)
+  volume_history?: string[],            // previous volume_ids
+  ens?: string,                         // ENS domain name
+  created_at: number,                   // unix timestamp
+  updated_at: number,                   // unix timestamp
+}
+```
+**Key files:** `packages/aleph-sdk/src/types/website.ts` (WebsiteAggregateItem), `packages/aleph-sdk/src/managers/website.ts` (addSteps, updateSteps, parseAggregateItem)
+**Notes:** Both `addSteps` and `updateSteps` must write `name` and `framework` inside `metadata`, not at the top level. The parser reads from `metadata?.framework` and `metadata?.name` with fallback defaults.
+
 ### Tailwind CSS 4 + Turbopack
 **Context:** Next.js 16 with pnpm monorepo. Tailwind CSS 4 uses `@tailwindcss/postcss` plugin.
 **Approach:** `postcss` must be an explicit devDependency (pnpm doesn't hoist transitive deps). Config must be `.cjs` format (`postcss.config.cjs`). The `@source` directive in `globals.css` tells Tailwind to scan data-terminal source files for utility classes. `@dt/*` aliases are configured via `turbopack.resolveAlias` in `next.config.ts`. Node.js built-in stubs (`fs`, `net`, `tls`, `os`, `path`) point to `src/lib/empty-module.ts` (an empty ESM export). `turbopack.root` is dynamically computed as the closest common ancestor of the monorepo and data-terminal's real paths, allowing Turbopack to read files across both directories.

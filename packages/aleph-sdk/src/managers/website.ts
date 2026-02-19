@@ -19,6 +19,7 @@ import type { CheckoutStepType } from '@/constants'
 import {
   EntityType,
   PaymentMethod,
+  WebsiteFrameworkId,
   defaultWebsiteAggregateKey,
   defaultWebsiteChannel,
 } from '@/constants'
@@ -323,14 +324,18 @@ export class WebsiteManager
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const content: Record<string, any> = {
         [website.id]: {
-          name: website.name,
-          framework: website.framework,
+          metadata: {
+            name: website.name,
+            framework: website.framework,
+          },
+          version: (website.version ?? 0) + 1,
           volume_id: volumeId,
           volume_history: [
             ...(website.volume_history || []),
             website.volume_id,
           ].filter(Boolean),
-          created_at: website.date,
+          ens: website.ens,
+          created_at: website.created_at,
           updated_at: date,
           ...recentHistory,
         },
@@ -507,23 +512,39 @@ export class WebsiteManager
     name: string,
     content: WebsiteAggregateItem,
   ): Promise<Website> {
-    const { framework, volume_id, volume_history, updated_at } =
-      content
-    const date = getDate(updated_at)
+    const {
+      metadata,
+      version,
+      volume_id,
+      volume_history,
+      ens,
+      created_at,
+      updated_at,
+    } = content
+    const framework =
+      metadata?.framework ?? WebsiteFrameworkId.None
+    const displayName = metadata?.name ?? name
+    const createdDate = created_at
+      ? getDate(created_at)
+      : getDate(updated_at)
+    const updatedDate = getDate(updated_at)
     const website: Website = {
       id: name,
-      name,
+      name: displayName,
       type: EntityType.Website,
-      framework: framework!,
-      updated_at: date,
-      date,
-      url: `/storage/volume/${volume_id}`,
+      framework,
+      version: version ?? 1,
+      created_at: createdDate,
+      updated_at: updatedDate,
+      date: createdDate,
+      url: `/infrastructure/websites/${name}`,
       size: 0,
       confirmed: true,
     }
     if (volume_id !== undefined) website.volume_id = volume_id
     if (volume_history !== undefined)
       website.volume_history = volume_history
+    if (ens !== undefined) website.ens = ens
     return website
   }
 }

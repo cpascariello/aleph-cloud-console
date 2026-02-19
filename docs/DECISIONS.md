@@ -18,6 +18,18 @@ Each entry includes:
 
 ---
 
+## Decision #16 - 2026-02-19
+**Context:** Website detail page showed a broken URL pointing to `localhost:3000/storage/volume/{id}` and was missing gateway URLs, IPFS CIDs, version info, and ENS setup instructions compared to the live console.
+**Decision:** Fetch the volume entity to get the IPFS CID from `volume.item_hash` (StoreContent), not from `website.volume_id` (Aleph message hash). Redesign the detail page with full parity: info row, default/alternative/ENS gateways, and current version card.
+**Rationale:** The `volume_id` stored in website aggregates is the Aleph message hash (hex), not the IPFS CID. These are two distinct hashes. The IPFS CID lives on the volume entity's `item_hash` field from `StoreContent`. Attempting CID conversion on the hex hash silently fails. The reference codebase fetches the volume entity to get `item_hash` and converts that.
+**Alternatives considered:** Storing the IPFS CID directly in the website aggregate (rejected: would require aggregate migration and break backward compatibility with existing websites). Computing the CID from the hex hash (impossible: they're unrelated hashes).
+
+## Decision #15 - 2026-02-19
+**Context:** The `WebsiteAggregateItem` type had incorrect fields (`type`, `programType`, `message_id`, top-level `framework`, top-level `name`) that didn't match the actual aggregate data stored by the API. Fields like `version`, `ens`, `created_at` existed in the data but were being discarded during parsing.
+**Decision:** Rewrite the type to match reality: `metadata` wrapper for `name`/`tags`/`framework`, plus `version`, `ens`, `created_at` at the top level. Update the parser and the `updateSteps` write path to use the same structure.
+**Rationale:** The aggregate content is written by `addSteps` with `metadata: { name, tags, framework }` at the nested level. The parser must read from the same structure it writes. The `updateSteps` method was also writing flat `name`/`framework` which would cause metadata loss after updates.
+**Alternatives considered:** None — this was a correctness fix, not a design choice.
+
 ## Decision #14 - 2026-02-18
 **Context:** All resource list pages (volumes, instances, programs, domains, SSH keys, websites) showed empty data with no loading indicator on page refresh or initial wallet connection. Queries fired immediately on mount before the wallet account resolved, caching empty results. React Query's invalidation (triggered when the account later resolved) raced with the in-flight initial fetch, and deduplication prevented a proper refetch with the authenticated manager.
 **Decision:** Gate all user-specific list queries with `enabled: !!accountAddress`, include the account address in query keys, and use `isPending` instead of `isLoading` in consuming components.

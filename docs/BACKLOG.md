@@ -35,6 +35,16 @@ Ideas and scope creep captured for later consideration.
 **Description:** Tests for `WalletButton`, `ChainBadge`, `PaymentMethodToggle`, `CostBreakdown`, `InsufficientFundsAlert`, `CheckoutSummary`. Deferred until React testing infrastructure (RTL + context wrapper utilities) is set up.
 **Priority:** Medium
 
+### 2026-02-19 - Consolidate `date` and `created_at` on Website type
+**Source:** Identified during website detail page redesign code review
+**Description:** The `Website` type has both `date` and `created_at` fields set to the same value. The `date` field exists for backward compatibility with list page sort logic. Once the list page uses `created_at` directly, `date` can be removed.
+**Priority:** Low
+
+### 2026-02-19 - Website version history UI
+**Source:** Identified during website detail page redesign
+**Description:** The live console shows previous versions with redeploy actions and legacy gateway URLs. Our redesign covers the current version only. Add a "Previous Versions" section that lists volume history entries with version numbers, sizes, and redeploy buttons.
+**Priority:** Medium
+
 ### 2026-02-17 - Multi-account support
 **Source:** Not in current scope but frequently requested
 **Description:** Support switching between multiple wallet accounts without disconnecting. Shared dashboard across accounts.
