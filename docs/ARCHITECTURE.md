@@ -111,7 +111,7 @@ Examples:
 **Context:** All resource list pages (compute, volumes, domains, websites, SSH keys) share the same interaction model: search, filter, sort, paginate, select, bulk actions.
 **Approach:** `useResourceList<T>` generic hook manages all list state via URL search params. Each page provides `getId`, `searchFn`, `filterFn`, and `sortFn` callbacks. Pagination is fixed at 25 items. Selection state is local (not URL).
 **Key files:** `packages/console/src/hooks/use-resource-list.ts`, `packages/console/src/components/resources/`
-**Notes:** Shared presentational components (`ResourceFilterBar`, `ResourcePagination`, `ResourceEmptyState`, `BulkActionBar`, `DeleteConfirmationModal`) compose with the hook. Each page maps its entity data to `RowShape` objects for `DataTable`.
+**Notes:** Shared presentational components (`ResourceFilterBar`, `ResourcePagination`, `ResourceEmptyState`, `BulkActionBar`, `DeleteConfirmationModal`) compose with the hook. Each page maps its entity data to `RowShape` objects for `DataTable`. All list pages pass `list.sortKey`, `list.sortDirection`, and `list.setSorting` to DataTable's controlled sort props (`sortKey`, `sortDir`, `onSortChange`) so column header clicks flow through `useResourceList`'s URL-param sort with type-aware comparisons. The dashboard's resource-health table uses DataTable's uncontrolled (internal) sort since its cells are simple strings.
 
 ### Resource Detail Page Pattern
 **Context:** All resource types need detail views with consistent structure: header with status/actions, tabbed content, delete confirmation.
