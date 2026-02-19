@@ -15,11 +15,6 @@ Ideas and scope creep captured for later consideration.
 
 ## Open Items
 
-### 2026-02-19 - Instance status badge should reflect CRN execution state
-**Source:** Identified during connection methods implementation
-**Description:** The "Running"/"Pending" badge on instance list and detail pages uses `instance.confirmed` (message confirmed on-chain), not actual CRN execution status. An instance can be confirmed but not allocated to any CRN. The real status comes from `ExecutableManager.checkStatus()` which calls the CRN. Fixing this requires either per-instance CRN status checks (expensive for list views) or a batch status endpoint. The connection methods card already fetches CRN status — that data could feed the detail page badge, but the list view needs a different approach.
-**Priority:** High
-
 ### 2026-02-19 - Instance detail: Explorer link should point to wallet address
 **Source:** Identified during connection methods testing
 **Description:** The explorer link on the instance overview tab currently points to the instance `item_hash`, which doesn't show useful information on the explorer. It should either point to an explorer page with relevant instance information, or fall back to the wallet address explorer page (e.g., `https://explorer.aleph.im/address/{sender}`). Requires checking what the Aleph explorer supports for instance/message views and updating `getExplorerURL` in the SDK accordingly.
@@ -84,6 +79,10 @@ Ideas and scope creep captured for later consideration.
 ---
 
 ## Completed / Rejected
+
+### 2026-02-19 - Instance status badge should reflect CRN execution state
+**Completed:** 2026-02-19
+**Delivered:** Badges now show real CRN execution state (Running/Booting/Stopped/Not Allocated/Unknown) on both list and detail pages. Detail page shows alert banner between header and tabs for non-running states. List page polls CRN status per-instance every 60s via useInstanceStatuses batch hook. Established Detail Page Alert Pattern for all resource detail pages. Migrated website volume-missing alert to same position.
 
 ### 2026-02-19 - Instance detail: Connection methods (IPv4/IPv6 + port forwarding)
 **Completed:** 2026-02-19

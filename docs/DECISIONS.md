@@ -18,6 +18,12 @@ Each entry includes:
 
 ---
 
+## Decision #18 - 2026-02-19
+**Context:** Instance status badges showed on-chain confirmation state, not real CRN execution state. Needed to show real status on both list and detail pages.
+**Decision:** Three simplified badge states (Running, Booting, Stopped) plus Not Allocated and Unknown. Alert banner between header and tabs for non-running states on detail pages. Per-instance CRN polling on list page (60s interval). Established Detail Page Alert Pattern as cross-cutting pattern for all resource detail pages.
+**Rationale:** Full lifecycle granularity (7 states) is too noisy for badges. Simplified states are scannable; alert banner provides detail when something needs attention. Per-instance polling is feasible for ≤20 instances. Alert pattern between header and tabs is visible regardless of active tab, only renders when needed, and uses existing Alert component.
+**Alternatives considered:** Full granularity badges (rejected: too many states, hard to scan). Status in overview card (rejected: hidden in tab content). Batch status API (rejected: doesn't exist on Aleph network).
+
 ## Decision #17 - 2026-02-19
 **Context:** Instance detail page missing general information. Payment data (type, chain) displayed inline vs separate tab.
 **Decision:** Payment gets its own tab (between Networking and Settings). Overview tab restructured to vertical card stack (Instance Details + SSH Keys). Hold/PAYG payment display kept minimal (type + chain only) since credits will replace them.
