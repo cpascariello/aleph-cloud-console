@@ -220,7 +220,7 @@ Generic, reusable UI components (navigation, layout, data display) belong in the
 - Instance detail page: 4-tab layout (overview specs, logs terminal, networking/volumes, settings/danger zone) with start/stop/reboot/delete actions
 - Volume detail page: size, dates, delete with high-risk confirmation
 - Domain detail page: DNS configuration code block, linked resource info, delete
-- Website detail page: info row (framework, version, size, dates), default gateway URL (CIDv1), alternative gateways template, ENS gateways setup instructions, current version card (volume link, item hash, IPFS CID v0/v1), delete
+- Website detail page: two-column card layout (ACCESS cards left, VERSION card right on lg+), info row (framework, version, size, dates), default gateway URL (CIDv1), alternative gateways template, ENS gateways setup instructions, current version card (volume link, item hash, IPFS CID v0/v1), delete
 - Wallet connection: Reown AppKit integration, multi-chain support (ETH, AVAX, BASE, SOL), navbar wallet button with chain badge, provider type guards
 - Payment components: payment method toggle (Hold/Stream), cost breakdown with line items, insufficient funds alert, checkout summary composite for wizard footers
 - Payment hooks: usePricing (cached pricing aggregate), useCostEstimate (reactive cost computation), useCanAfford (balance check with React Query)

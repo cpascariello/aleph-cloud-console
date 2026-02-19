@@ -117,7 +117,7 @@ Examples:
 **Context:** All resource types need detail views with consistent structure: header with status/actions, tabbed content, delete confirmation.
 **Approach:** Each detail page uses `use(params)` to unwrap Next.js 16 async params. Shared layout: PageHeader (breadcrumbs) → header (icon, name, StatusDot, Badge, CopyButton for ID) → `TerminalTabs` with Overview + Settings tabs. Settings tab always contains a danger zone with `DeleteConfirmationModal`. Instance detail has 4 tabs (overview, logs, networking, settings) with extracted tab components. Simpler resources inline their tab content.
 **Key files:** `packages/console/src/app/(console)/compute/[id]/page.tsx`, `packages/console/src/components/compute/detail/`, `packages/console/src/app/(console)/infrastructure/*/[id]/page.tsx`
-**Notes:** Volume delete uses `highRisk` prop on `DeleteConfirmationModal` for type-to-confirm. Instance actions (start/stop/reboot) use `useInstanceActions` mutation hook.
+**Notes:** Volume delete uses `highRisk` prop on `DeleteConfirmationModal` for type-to-confirm. Instance actions (start/stop/reboot) use `useInstanceActions` mutation hook. The website detail page uses a two-column card grid (`grid-cols-1 lg:grid-cols-2 items-start`) — ACCESS cards (gateway, alternative, ENS) in the left column, VERSION card in the right column. This pattern should be extended to other detail pages (see BACKLOG.md).
 
 ### Aleph Volumes and IPFS Hashes
 **Context:** Websites (and other resources) reference volumes by ID, and volumes contain IPFS content. There are two distinct hashes involved that are easy to confuse.
