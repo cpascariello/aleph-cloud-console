@@ -15,6 +15,31 @@ Ideas and scope creep captured for later consideration.
 
 ## Open Items
 
+### 2026-02-19 - Instance detail: General information section
+**Source:** Comparison with live console (v1) — screenshot 01
+**Description:** The overview tab is missing most of the instance metadata: item hash (with copy), cores/RAM/HDD in a compact row, explorer link, Hosting CRN (name, URL, version), SSH key names + IDs (not just "Configured"), and Payment block (token amount, type Hold/Stream, blockchain, start date). Currently only shows specs in cards and a date.
+**Priority:** High
+
+### 2026-02-19 - Instance detail: Connection methods (IPv4/IPv6 + port forwarding)
+**Source:** Comparison with live console (v1) — screenshot 02
+**Description:** Add Connection Methods section with IPv4/IPv6 tabs. Each tab shows SSH command (copyable) and the IP address. IPv4 tab also shows port forwarding table (source/destination, TCP/UDP toggles, Add button). Requires fetching execution status from CRN to get allocated IPs and mapped ports.
+**Priority:** High
+
+### 2026-02-19 - Instance detail: Live logs with wallet signature
+**Source:** Comparison with live console (v1) — screenshot 03
+**Description:** Logs tab currently shows placeholder data. Real implementation: "View" button opens sliding panel with Stdout/Stderr sections, "Download logs" link. Both require wallet signature to authenticate with the CRN. Need to implement log fetching API, wallet signing flow, and streaming display.
+**Priority:** High
+
+### 2026-02-19 - Instance detail: Custom domain DNS configuration warnings
+**Source:** Comparison with live console (v1) — screenshot 04
+**Description:** When a custom domain is linked to an instance but DNS records aren't configured, show a warning badge ("DOMAIN RECORDS NOT CONFIGURED") and pending steps: (1) CNAME record instruction, (2) TXT owner proof record with wallet address. Include a "Retry" button to re-check. The domain detail page in v1 shows this — we need it surfaced on the instance detail too.
+**Priority:** Medium
+
+### 2026-02-19 - Credits payment system
+**Source:** Identified during instance detail general info brainstorming
+**Description:** Hold/PAYG (Superfluid stream) payment methods will be replaced by a credits system. The SDK and console don't account for credits yet. Needs: new payment type in SDK constants, cost estimation updates, wizard payment step changes, and detail page display. Showing payment.type + chain now will help distinguish old (hold/stream) from new (credits) resources in the future.
+**Priority:** High
+
 ### 2026-02-17 - CLI companion tool
 **Source:** Identified during SDK extraction design
 **Description:** The extracted aleph-sdk package could power a CLI tool for deploying resources from the terminal. Same managers, no React.
