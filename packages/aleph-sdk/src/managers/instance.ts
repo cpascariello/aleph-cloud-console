@@ -83,6 +83,7 @@ export class InstanceManager<T extends InstanceEntity = Instance>
         addresses: [this.account.address],
         messageTypes: [MessageType.instance],
         channels: [this.channel],
+        pagination: 200,
       })
 
       return await this.parseMessages(response.messages)

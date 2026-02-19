@@ -76,7 +76,7 @@ export class VolumeManager
     const {
       ids,
       page,
-      pagination,
+      pagination = 200,
       addresses = !ids && this.account
         ? [this.account.address]
         : undefined,

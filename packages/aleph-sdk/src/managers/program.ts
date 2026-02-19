@@ -78,6 +78,7 @@ export class ProgramManager
         addresses: [this.account.address],
         messageTypes: [MessageType.program],
         channels: [this.channel],
+        pagination: 200,
       })
 
       return await this.parseMessages(response.messages)
