@@ -4,6 +4,7 @@ import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
+  Alert,
   Badge,
   CopyButton,
   GlowLine,
@@ -42,7 +43,7 @@ export default function WebsiteDetailPage({
   const { id } = use(params)
   const router = useRouter()
   const { data: website, isLoading } = useWebsite(id)
-  const { data: volume } = useVolume(website?.volume_id ?? '')
+  const { data: volume, isError: volumeError } = useVolume(website?.volume_id ?? '')
   const deleteWebsite = useDeleteWebsite()
   const [showDelete, setShowDelete] = useState(false)
 
@@ -98,6 +99,12 @@ export default function WebsiteDetailPage({
             <Badge variant={website.confirmed ? 'success' : 'warning'}>
               {website.confirmed ? 'Live' : 'Pending'}
             </Badge>
+            {volumeError && (
+              <>
+                <StatusDot variant="error" />
+                <Badge variant="error">Volume Missing</Badge>
+              </>
+            )}
           </div>
           <IconButton
             variant="ghost"
@@ -130,7 +137,7 @@ export default function WebsiteDetailPage({
         </div>
         <div className="flex flex-col gap-1">
           <HudLabel>Size</HudLabel>
-          <span>{volume?.size ? humanReadableSize(volume.size) : '\u2014'}</span>
+          <span>{volumeError ? 'Unavailable' : volume?.size ? humanReadableSize(volume.size) : '\u2014'}</span>
         </div>
         <div className="flex flex-col gap-1">
           <HudLabel>Created On</HudLabel>
@@ -221,51 +228,72 @@ export default function WebsiteDetailPage({
                   Version {website.version}
                 </div>
                 <GlowLine />
-                <div className="flex items-center gap-3 text-sm">
-                  <HudLabel>Volume</HudLabel>
-                  <Link
-                    href={`/infrastructure/volumes/${website.volume_id}`}
-                    className="text-accent hover:underline font-mono text-xs"
-                  >
-                    {truncateHash(website.volume_id)}
-                  </Link>
-                </div>
-                <GlowLine />
-                <div className="flex flex-col gap-1 text-sm">
-                  <HudLabel>Item Hash</HudLabel>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs break-all">
-                      {website.volume_id}
-                    </span>
-                    <CopyButton text={website.volume_id} />
-                  </div>
-                </div>
-                {ipfsCid && (
+                {volumeError ? (
                   <>
-                    <GlowLine />
-                    <div className="flex flex-col gap-1 text-sm">
-                      <HudLabel>IPFS CID V0</HudLabel>
+                    <Alert variant="warning">
+                      The volume backing this website has been forgotten or
+                      deleted from the network. The website content is no
+                      longer available.
+                    </Alert>
+                    <div className="flex items-center gap-3 text-sm">
+                      <HudLabel>Volume ID</HudLabel>
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-xs break-all">
-                          {ipfsCid}
+                          {website.volume_id}
                         </span>
-                        <CopyButton text={ipfsCid} />
+                        <CopyButton text={website.volume_id} />
                       </div>
                     </div>
                   </>
-                )}
-                {cidV1 && (
+                ) : (
                   <>
+                    <div className="flex items-center gap-3 text-sm">
+                      <HudLabel>Volume</HudLabel>
+                      <Link
+                        href={`/infrastructure/volumes/${website.volume_id}`}
+                        className="text-accent hover:underline font-mono text-xs"
+                      >
+                        {truncateHash(website.volume_id)}
+                      </Link>
+                    </div>
                     <GlowLine />
                     <div className="flex flex-col gap-1 text-sm">
-                      <HudLabel>IPFS CID V1</HudLabel>
+                      <HudLabel>Item Hash</HudLabel>
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-xs break-all">
-                          {cidV1}
+                          {website.volume_id}
                         </span>
-                        <CopyButton text={cidV1} />
+                        <CopyButton text={website.volume_id} />
                       </div>
                     </div>
+                    {ipfsCid && (
+                      <>
+                        <GlowLine />
+                        <div className="flex flex-col gap-1 text-sm">
+                          <HudLabel>IPFS CID V0</HudLabel>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs break-all">
+                              {ipfsCid}
+                            </span>
+                            <CopyButton text={ipfsCid} />
+                          </div>
+                        </div>
+                      </>
+                    )}
+                    {cidV1 && (
+                      <>
+                        <GlowLine />
+                        <div className="flex flex-col gap-1 text-sm">
+                          <HudLabel>IPFS CID V1</HudLabel>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs break-all">
+                              {cidV1}
+                            </span>
+                            <CopyButton text={cidV1} />
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
               </div>

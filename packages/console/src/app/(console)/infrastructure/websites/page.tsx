@@ -1,6 +1,6 @@
 'use client'
 
-import { type ReactNode, Suspense, useEffect, useState } from 'react'
+import { type ReactNode, Suspense, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 import {
@@ -8,6 +8,7 @@ import {
   Badge,
   Checkbox,
   Skeleton,
+  StatusDot,
   Button,
   IconButton,
 } from '@/components/data-terminal'
@@ -18,6 +19,7 @@ import { ResourceEmptyState } from '@/components/resources/resource-empty-state'
 import { DeleteConfirmationModal } from '@/components/resources/delete-confirmation-modal'
 import { WebsiteWizardContent } from '@/components/infrastructure/website-wizard-content'
 import { useWebsites } from '@/hooks/queries/use-websites'
+import { useVolumes } from '@/hooks/queries/use-volumes'
 import { useDeleteWebsite } from '@/hooks/mutations/use-delete-resource'
 import { useResourceList } from '@/hooks/use-resource-list'
 import { useDrawer } from '@/hooks/use-drawer'
@@ -28,6 +30,7 @@ import { Plus, Settings, Trash2 } from 'lucide-react'
 
 type RowShape = {
   select: ReactNode
+  status: ReactNode
   name: ReactNode
   framework: ReactNode
   date: ReactNode
@@ -87,8 +90,17 @@ function WebsiteRowActions({
 
 export default function WebsitesPage() {
   const { data: websites = [], isPending } = useWebsites()
+  const { data: volumes = [], isPending: volumesPending } = useVolumes()
   const deleteWebsite = useDeleteWebsite()
   const { openDrawer, closeDrawer } = useDrawer()
+
+  const volumeIds = useMemo(() => {
+    const ids = new Set<string>()
+    for (const vol of volumes) {
+      ids.add(vol.id)
+    }
+    return ids
+  }, [volumes])
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -175,6 +187,7 @@ export default function WebsitesPage() {
               columns={[
                 { key: 'select', label: '' },
                 { key: 'name', label: 'Name', sortable: true },
+                { key: 'status', label: 'Status' },
                 { key: 'framework', label: 'Framework' },
                 { key: 'date', label: 'Deployed', sortable: true },
                 { key: 'id', label: 'ID' },
@@ -196,6 +209,34 @@ export default function WebsitesPage() {
                       {site.name || truncateHash(site.id)}
                     </Link>
                   ),
+                  status: (() => {
+                    if (volumesPending) {
+                      return (
+                        <span className="flex items-center gap-2 text-sm">
+                          <StatusDot variant="neutral" />
+                          <span className="text-muted-foreground">—</span>
+                        </span>
+                      )
+                    }
+                    const missing =
+                      !!site.volume_id && !volumeIds.has(site.volume_id)
+                    return (
+                      <span className="flex items-center gap-2 text-sm">
+                        <StatusDot
+                          variant={missing ? 'error' : 'success'}
+                        />
+                        <span
+                          className={
+                            missing
+                              ? 'text-red-400'
+                              : 'text-muted-foreground'
+                          }
+                        >
+                          {missing ? 'Volume Missing' : 'Live'}
+                        </span>
+                      </span>
+                    )
+                  })(),
                   framework: (
                     <Badge variant="neutral">
                       {WebsiteFrameworks[site.framework]?.name ??
