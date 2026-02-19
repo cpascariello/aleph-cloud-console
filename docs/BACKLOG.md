@@ -15,11 +15,6 @@ Ideas and scope creep captured for later consideration.
 
 ## Open Items
 
-### 2026-02-19 - Instance detail: Explorer link should point to wallet address
-**Source:** Identified during connection methods testing
-**Description:** The explorer link on the instance overview tab currently points to the instance `item_hash`, which doesn't show useful information on the explorer. It should either point to an explorer page with relevant instance information, or fall back to the wallet address explorer page (e.g., `https://explorer.aleph.im/address/{sender}`). Requires checking what the Aleph explorer supports for instance/message views and updating `getExplorerURL` in the SDK accordingly.
-**Priority:** Low
-
 ### 2026-02-19 - Instance detail: Live logs with wallet signature
 **Source:** Comparison with live console (v1) — screenshot 03
 **Description:** Logs tab currently shows placeholder data. Real implementation: "View" button opens sliding panel with Stdout/Stderr sections, "Download logs" link. Both require wallet signature to authenticate with the CRN. Need to implement log fetching API, wallet signing flow, and streaming display.
@@ -78,6 +73,10 @@ Ideas and scope creep captured for later consideration.
 ### 2026-02-19 - Fix TypeScript errors in data-terminal button.tsx
 **Completed:** 2026-02-19
 **Delivered:** Removed `forwardRef` from Button component in data-terminal. React 19 passes ref as a regular prop, making `forwardRef` unnecessary. The wrapper caused TS2322 when the console compiled data-terminal as source — two separate `@types/react` installs produced nominally different `Ref` types.
+
+### 2026-02-19 - Explorer links point to correct Aleph message page
+**Completed:** 2026-02-19
+**Delivered:** `getExplorerURL` now builds `/address/{chain}/{sender}/message/{type}/{hash}` matching the v1 console, instead of the broken `/address/ETH/{hash}`. Updated all four managers (instance, volume, program, SSH). Added CSS truncation for long URLs on detail pages and `min-w-0` on the instance detail grid column to prevent layout overflow.
 
 ### 2026-02-19 - Instance status badge should reflect CRN execution state
 **Completed:** 2026-02-19
