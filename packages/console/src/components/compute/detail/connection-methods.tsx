@@ -16,7 +16,7 @@ import {
   getSSHForwardedPort,
 } from '@/lib/ssh'
 import type { ExecutableStatus } from 'aleph-sdk'
-import { AlertTriangle, CircleOff, Terminal } from 'lucide-react'
+import { Terminal } from 'lucide-react'
 
 interface ConnectionMethodsProps {
   status: ExecutableStatus | undefined
@@ -43,31 +43,8 @@ export function ConnectionMethods({
     )
   }
 
-  if (isError) {
-    return (
-      <TerminalCard tag="CONN" label="Connection Methods">
-        <div className="flex items-center gap-2 p-4 text-sm text-warning">
-          <AlertTriangle size={16} />
-          <span>
-            Unable to reach compute node. The instance may still be
-            running.
-          </span>
-        </div>
-      </TerminalCard>
-    )
-  }
-
-  if (!status) {
-    return (
-      <TerminalCard tag="CONN" label="Connection Methods">
-        <div className="flex items-center gap-2 p-4 text-sm text-muted-foreground">
-          <CircleOff size={16} />
-          <span>
-            No compute node allocated. Connection details unavailable.
-          </span>
-        </div>
-      </TerminalCard>
-    )
+  if (isError || !status) {
+    return null
   }
 
   const sshPort = getSSHForwardedPort(ports)
