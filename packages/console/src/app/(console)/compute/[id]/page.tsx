@@ -3,6 +3,7 @@
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
+  Alert,
   Badge,
   Button,
   CopyButton,
@@ -23,6 +24,8 @@ import { SettingsTab } from '@/components/compute/detail/settings-tab'
 import { useInstance } from '@/hooks/queries/use-instances'
 import { useDeleteInstance } from '@/hooks/mutations/use-delete-resource'
 import { formatDate, truncateHash } from '@/lib/format'
+import { deriveInstanceStatus } from '@/lib/instance-status'
+import { useExecutableStatus } from '@/hooks/queries/use-executable-status'
 import { Play, RotateCcw, Server, Square, Trash2 } from 'lucide-react'
 
 export default function InstanceDetailPage({
@@ -35,6 +38,16 @@ export default function InstanceDetailPage({
   const { data: instance, isLoading } = useInstance(id)
   const deleteInstance = useDeleteInstance()
   const [showDelete, setShowDelete] = useState(false)
+  const {
+    data: rawExecStatus,
+    isError: execStatusError,
+  } = useExecutableStatus(instance)
+  const executableStatus = rawExecStatus === undefined
+    ? undefined
+    : rawExecStatus
+  const instanceStatus = instance
+    ? deriveInstanceStatus(executableStatus, execStatusError, !!instance.confirmed)
+    : undefined
 
   if (isLoading) {
     return (
@@ -77,12 +90,12 @@ export default function InstanceDetailPage({
                 {instance.name || truncateHash(instance.id)}
               </h1>
               <StatusDot
-                variant={instance.confirmed ? 'success' : 'warning'}
+                variant={instanceStatus?.dotVariant ?? 'neutral'}
               />
               <Badge
-                variant={instance.confirmed ? 'success' : 'warning'}
+                variant={instanceStatus?.dotVariant ?? 'neutral'}
               >
-                {instance.confirmed ? 'Running' : 'Pending'}
+                {instanceStatus?.label ?? '...'}
               </Badge>
             </div>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -95,6 +108,12 @@ export default function InstanceDetailPage({
               </div>
             </div>
           </div>
+
+          {instanceStatus?.alert && (
+            <Alert variant={instanceStatus.alert.variant}>
+              {instanceStatus.alert.message}
+            </Alert>
+          )}
 
           {/* Tabs */}
           <TerminalTabs
@@ -137,12 +156,10 @@ export default function InstanceDetailPage({
                 <HudLabel>Status</HudLabel>
                 <div className="flex items-center gap-2">
                   <StatusDot
-                    variant={
-                      instance.confirmed ? 'success' : 'warning'
-                    }
+                    variant={instanceStatus?.dotVariant ?? 'neutral'}
                   />
                   <span>
-                    {instance.confirmed ? 'Running' : 'Pending'}
+                    {instanceStatus?.label ?? '...'}
                   </span>
                 </div>
               </div>
