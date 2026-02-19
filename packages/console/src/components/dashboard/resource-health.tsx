@@ -10,9 +10,11 @@ import {
   TerminalCard,
 } from '@/components/data-terminal'
 import { useInstances } from '@/hooks/queries/use-instances'
+import { useInstanceStatuses } from '@/hooks/queries/use-instance-statuses'
 import { usePrograms } from '@/hooks/queries/use-programs'
 import { useWebsites } from '@/hooks/queries/use-websites'
 import { truncateHash, relativeTime } from '@/lib/format'
+import { deriveInstanceStatus } from '@/lib/instance-status'
 import { EntityType, EntityTypeName } from 'aleph-sdk'
 
 type HealthRow = {
@@ -37,6 +39,7 @@ function getStatusLabel(confirmed?: boolean): string {
 
 export function ResourceHealth() {
   const instances = useInstances()
+  const statusMap = useInstanceStatuses(instances.data ?? [])
   const programs = usePrograms()
   const websites = useWebsites()
 
@@ -47,6 +50,12 @@ export function ResourceHealth() {
     const result: HealthRow[] = []
 
     for (const inst of instances.data ?? []) {
+      const entry = statusMap.get(inst.id)
+      const status = deriveInstanceStatus(
+        entry?.data,
+        entry?.isError ?? false,
+        inst.confirmed ?? false,
+      )
       result.push({
         name: (
           <Link
@@ -63,9 +72,9 @@ export function ResourceHealth() {
         ),
         status: (
           <span className="flex items-center gap-2">
-            <StatusDot variant={getStatusVariant(inst.confirmed)} />
+            <StatusDot variant={status.dotVariant} />
             <span className="text-sm">
-              {getStatusLabel(inst.confirmed)}
+              {status.label}
             </span>
           </span>
         ),
@@ -135,7 +144,7 @@ export function ResourceHealth() {
         ),
         date: (
           <span className="text-muted-foreground text-sm">
-            {relativeTime(site.date)}
+            {relativeTime(site.created_at)}
           </span>
         ),
         id: (
@@ -147,7 +156,7 @@ export function ResourceHealth() {
     }
 
     return result
-  }, [instances.data, programs.data, websites.data])
+  }, [instances.data, statusMap, programs.data, websites.data])
 
   if (isPending) {
     return <Skeleton variant="card" height="200px" />

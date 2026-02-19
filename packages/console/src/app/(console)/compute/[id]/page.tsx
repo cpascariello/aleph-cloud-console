@@ -215,7 +215,7 @@ export default function InstanceDetailPage({
                 Reboot
               </Button>
               <Button
-                variant="primary"
+                variant="danger"
                 size="sm"
                 iconLeft={<Trash2 size={14} />}
                 className="w-full justify-start"

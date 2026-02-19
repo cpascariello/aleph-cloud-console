@@ -536,7 +536,6 @@ export class WebsiteManager
       version: version ?? 1,
       created_at: createdDate,
       updated_at: updatedDate,
-      date: createdDate,
       url: `/infrastructure/websites/${name}`,
       size: 0,
       confirmed: true,

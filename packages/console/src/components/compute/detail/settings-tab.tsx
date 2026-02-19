@@ -55,7 +55,7 @@ export function SettingsTab({
           </Alert>
           <div className="flex justify-end">
             <Button
-              variant="primary"
+              variant="danger"
               size="sm"
               iconLeft={<Trash2 size={14} />}
               onClick={onDelete}

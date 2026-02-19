@@ -154,7 +154,7 @@ ${domain.name}.    IN    A        <check-console-for-ip>
                         </Alert>
                         <div className="flex justify-end">
                           <Button
-                            variant="primary"
+                            variant="danger"
                             size="sm"
                             iconLeft={<Trash2 size={14} />}
                             onClick={() => setShowDelete(true)}
@@ -202,7 +202,7 @@ ${domain.name}.    IN    A        <check-console-for-ip>
           <TerminalCard tag="CMD" label="Actions">
             <div className="flex flex-col gap-2 p-4">
               <Button
-                variant="primary"
+                variant="danger"
                 size="sm"
                 iconLeft={<Trash2 size={14} />}
                 className="w-full justify-start"

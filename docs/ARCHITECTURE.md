@@ -43,6 +43,9 @@ aleph-cloud-console/          # Monorepo root
 
 ## Patterns
 
+### Single Source of Truth for Derived Data
+**Rule:** When a piece of data has a canonical derivation (hook, utility function, or manager method), every UI surface must use that same derivation. Never re-derive the same data with simpler/different logic in another component. If the dashboard, list page, and detail page all show instance status, they all use `deriveInstanceStatus` + `useInstanceStatuses`. If they all show website health, they all check the same volume lookup. No component gets a "lighter" version of the truth.
+
 ### Entity Manager Pattern (SDK)
 **Context:** All Aleph network resources follow the same CRUD + multi-step signing pattern.
 **Approach:** Each resource type has a manager class implementing `EntityManager<T, AT>` with `getAll`, `get`, `add`, `del`, and async generator variants (`addSteps`, `delSteps`) that yield at each wallet signature step.
@@ -129,7 +132,7 @@ Examples:
 
 ### Instance Status Derivation
 **Context:** Instance status badges need real CRN execution state, not just on-chain confirmation.
-**Approach:** Pure function `deriveInstanceStatus(executableStatus, isError, confirmed)` in `lib/instance-status.ts` maps CRN data to a simplified `{ label, dotVariant, alert? }` object. Three badge states: Running (success), Booting (warning, covers preparing+starting), Stopped (error, covers stopping+stopped). Two additional states: Not Allocated (neutral), Unknown (warning, CRN unreachable). Falls back to `confirmed`-based display while loading. Used by both detail page (via `useExecutableStatus`) and list page (via `useInstanceStatuses` batch hook with 60s polling).
+**Approach:** Pure function `deriveInstanceStatus(executableStatus, isError, confirmed)` in `lib/instance-status.ts` maps CRN data to a simplified `{ label, dotVariant, alert? }` object. Three badge states: Running (success), Booting (warning, covers preparing+starting), Stopped (error, covers stopping+stopped). Two additional states: Not Allocated (neutral), Unknown (warning, CRN unreachable). Falls back to `confirmed`-based display while loading. Used by detail page (via `useExecutableStatus`), list page, and dashboard resource health table (both via `useInstanceStatuses` batch hook with 60s polling).
 **Key files:** `packages/console/src/lib/instance-status.ts`, `packages/console/src/hooks/queries/use-instance-statuses.ts`
 
 ### Detail Page Alert Pattern

@@ -309,7 +309,7 @@ export default function WebsiteDetailPage({
                         </Alert>
                         <div className="flex justify-end">
                           <Button
-                            variant="primary"
+                            variant="danger"
                             size="sm"
                             iconLeft={<Trash2 size={14} />}
                             onClick={() => setShowDelete(true)}
@@ -400,7 +400,7 @@ export default function WebsiteDetailPage({
                 </a>
               )}
               <Button
-                variant="primary"
+                variant="danger"
                 size="sm"
                 iconLeft={<Trash2 size={14} />}
                 className="w-full justify-start"

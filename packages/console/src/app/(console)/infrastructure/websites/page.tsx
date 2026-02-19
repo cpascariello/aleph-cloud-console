@@ -33,7 +33,7 @@ type RowShape = {
   status: ReactNode
   name: ReactNode
   framework: ReactNode
-  date: ReactNode
+  created_at: ReactNode
   id: ReactNode
   actions: ReactNode
 }
@@ -128,11 +128,11 @@ export default function WebsitesPage() {
       (item.name?.toLowerCase().includes(query) ?? false) ||
       item.id.toLowerCase().includes(query),
     filterFn: (item, filter) => item.framework === filter,
-    defaultSort: 'date',
+    defaultSort: 'created_at',
     sortFn: (a, b, key, dir) => {
       const mult = dir === 'asc' ? 1 : -1
       if (key === 'name') return mult * (a.name ?? '').localeCompare(b.name ?? '')
-      if (key === 'date') return mult * a.date.localeCompare(b.date)
+      if (key === 'created_at') return mult * a.created_at.localeCompare(b.created_at)
       return 0
     },
   })
@@ -192,7 +192,7 @@ export default function WebsitesPage() {
                 { key: 'name', label: 'Name', sortable: true },
                 { key: 'status', label: 'Status' },
                 { key: 'framework', label: 'Framework' },
-                { key: 'date', label: 'Deployed', sortable: true },
+                { key: 'created_at', label: 'Deployed', sortable: true },
                 { key: 'id', label: 'ID' },
                 { key: 'actions', label: '' },
               ]}
@@ -246,9 +246,9 @@ export default function WebsitesPage() {
                         site.framework}
                     </Badge>
                   ),
-                  date: (
+                  created_at: (
                     <span className="text-muted-foreground text-sm">
-                      {relativeTime(site.date)}
+                      {relativeTime(site.created_at)}
                     </span>
                   ),
                   id: (

@@ -57,7 +57,6 @@ export type Website = {
   id: string
   name: string
   url: string
-  date: string
   created_at: string
   updated_at: string
   size: number
