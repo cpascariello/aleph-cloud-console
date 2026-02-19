@@ -119,6 +119,8 @@ Examples:
 **Key files:** `packages/console/src/app/(console)/compute/[id]/page.tsx`, `packages/console/src/components/compute/detail/`, `packages/console/src/app/(console)/infrastructure/*/[id]/page.tsx`
 **Notes:** Volume delete uses `highRisk` prop on `DeleteConfirmationModal` for type-to-confirm. Instance actions (start/stop/reboot) use `useInstanceActions` mutation hook. The website detail page uses a two-column card grid (`grid-cols-1 lg:grid-cols-2 items-start`) — ACCESS cards (gateway, alternative, ENS) in the left column, VERSION card in the right column. This pattern should be extended to other detail pages (see BACKLOG.md).
 
+**Cross-entity health checks:** When a resource depends on another (e.g., website → volume), both list and detail pages should detect missing dependencies. The website list page fetches all volumes via `useVolumes`, builds a `Set<string>` of volume IDs, and renders a `StatusDot` + label ("Live" / "Volume Missing") per row. The detail page captures `isError` from `useVolume` and shows a "Volume Missing" badge in the header, "Unavailable" for size, and a warning `Alert` in the version card with the volume ID as copyable text (not a link). Gateway cards naturally hide when volume is missing since `cidV1` is null.
+
 ### Aleph Volumes and IPFS Hashes
 **Context:** Websites (and other resources) reference volumes by ID, and volumes contain IPFS content. There are two distinct hashes involved that are easy to confuse.
 **Approach:** Understand the two-hash system:
@@ -152,6 +154,37 @@ Examples:
 **Key files:** `packages/aleph-sdk/src/types/website.ts` (WebsiteAggregateItem), `packages/aleph-sdk/src/managers/website.ts` (addSteps, updateSteps, parseAggregateItem)
 **Notes:** Both `addSteps` and `updateSteps` must write `name` and `framework` inside `metadata`, not at the top level. The parser reads from `metadata?.framework` and `metadata?.name` with fallback defaults.
 
+### Aleph Message Structure & Chain Data
+**Context:** Every resource on the Aleph network is stored as a "message" with a standard envelope. Understanding this envelope is essential when surfacing new fields in the UI.
+**Approach:** The Aleph API returns `PublishedMessage<T>` objects with this structure:
+```
+message (PublishedMessage)
+├── chain: Blockchain         ← signing chain (ETH, AVAX, BASE, SOL)
+├── sender: string            ← wallet address
+├── item_hash: string         ← unique message ID
+├── time: number              ← unix timestamp
+├── confirmed: boolean
+├── confirmations: []         ← blockchain confirmations
+└── content: T                ← resource-specific payload
+    ├── (resource fields)
+    └── payment?              ← executables only
+        ├── chain: Blockchain ← payment chain (may differ from signing chain)
+        └── type: hold | superfluid
+```
+
+**Two chain fields:**
+- `message.chain` — the blockchain the user was connected to when creating the resource. Available on ALL message types (instances, volumes, domains, websites, SSH keys).
+- `message.content.payment.chain` — the blockchain used for payment. Only on executables (instances, programs, GPU, confidential). Can differ from signing chain (e.g., signed on ETH, paid via superfluid on BASE).
+
+**Current parsing:** Each manager's `parseMessages()` method maps raw messages to entity types. It spreads `message.content` and adds computed fields (`id`, `name`, `date`, `type`). Fields not explicitly extracted from the message envelope (like `message.chain`) are dropped. To surface a new envelope field, it must be added to `parseMessages()` and the entity type.
+
+| Entity Type | `message.chain` | `content.payment.chain` |
+|---|---|---|
+| Instance / GPU / Confidential / Program | Available | Available |
+| Volume / Domain / Website / SSH Key | Available | N/A (no payment) |
+
+**Key files:** `packages/aleph-sdk/node_modules/@aleph-sdk/message/dist/index.d.ts` (upstream types), `packages/aleph-sdk/src/managers/instance.ts:627` (parseMessages example), `packages/aleph-sdk/src/types/executable.ts` (Executable type with optional chain)
+
 ### Tailwind CSS 4 + Turbopack
 **Context:** Next.js 16 with pnpm monorepo. Tailwind CSS 4 uses `@tailwindcss/postcss` plugin.
 **Approach:** `postcss` must be an explicit devDependency (pnpm doesn't hoist transitive deps). Config must be `.cjs` format (`postcss.config.cjs`). The `@source` directive in `globals.css` tells Tailwind to scan data-terminal source files for utility classes. `@dt/*` aliases are configured via `turbopack.resolveAlias` in `next.config.ts`. Node.js built-in stubs (`fs`, `net`, `tls`, `os`, `path`) point to `src/lib/empty-module.ts` (an empty ESM export). `turbopack.root` is dynamically computed as the closest common ancestor of the monorepo and data-terminal's real paths, allowing Turbopack to read files across both directories.
@@ -174,6 +207,17 @@ Examples:
 8. Create detail page at `packages/console/src/app/(console)/[section]/[resource]s/[id]/page.tsx`
 9. Create wizard at `packages/console/src/app/(console)/[section]/[resource]s/new/page.tsx`
 10. Add to sidebar config in `packages/console/src/components/shell/sidebar-config.ts`
+
+### Surfacing a New API Field in the UI
+
+When the Aleph API returns data that isn't currently visible in the console:
+
+1. **Identify the source:** Is the field on the message envelope (`message.chain`, `message.sender`) or inside content (`message.content.payment`)? Check the `PublishedMessage` type in `@aleph-sdk/message`.
+2. **Update the entity type:** Add the field to the resource type in `packages/aleph-sdk/src/types/[resource].ts`.
+3. **Extract in parseMessages:** Update the manager's `parseMessages()` in `packages/aleph-sdk/src/managers/[resource].ts` to include the field from the raw message.
+4. **Verify in hook:** The React Query hook (`useInstances`, `useVolumes`, etc.) passes through manager data — no changes usually needed, but verify the field is accessible in the returned data.
+5. **Add to UI:** Update the list component's `RowShape` type and column definitions, or add to the detail page layout.
+6. **Update ARCHITECTURE.md** with the new field's semantics if non-obvious.
 
 ### Adding a New Wizard Step
 

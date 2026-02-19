@@ -10,7 +10,7 @@ Persistent habits for maintaining project memory across sessions.
 
 ---
 
-## Three Habits
+## Four Habits
 
 ### 1. Decision Logging
 
@@ -56,7 +56,21 @@ When the conversation drifts from the stated task:
 **Priority:** Low/Medium/High
 ```
 
-### 3. Git Discipline
+### 3. SDK Knowledge Capture
+
+**This is a proactive habit, not a reactive one.**
+
+When investigating the Aleph SDK or `@aleph-sdk/*` packages and you discover:
+- API response fields that aren't currently used or documented
+- Parsing behavior that drops data (e.g., `parseMessages` not extracting envelope fields)
+- Non-obvious relationships between types (e.g., two different chain fields with different semantics)
+- Upstream type structures from `@aleph-sdk/message`, `@aleph-sdk/core`, etc.
+
+**Action:** Propose adding the finding to `docs/ARCHITECTURE.md` under the relevant pattern section (or a new one). Frame it as: "I discovered [X] about the SDK internals. Want me to document this in ARCHITECTURE.md?"
+
+This prevents re-investigation across sessions. SDK internals don't change often, so documenting them once saves significant context recovery time.
+
+### 4. Git Discipline
 
 **Branching:**
 - Brainstorm and plan on main
@@ -211,7 +225,7 @@ Generic, reusable UI components (navigation, layout, data display) belong in the
 - Dashboard (connected): two-column layout — main column (stat cards, resource health table with instances/programs/websites) + sticky sidebar (quick actions, quick links, getting started checklist)
 - Dashboard (disconnected): marketing page with feature highlight cards, public network stats (CCN/CRN counts, aggregate CPU/storage), connect wallet CTA
 - Compute page: tabbed list (Instances, GPU, Confidential, Functions) with search, sort, pagination, delete
-- Infrastructure pages: Volumes (type filter), Domains, Websites (framework filter) — all with search, pagination, delete
+- Infrastructure pages: Volumes (type filter), Domains, Websites (framework filter, volume health status) — all with search, pagination, delete
 - SSH Keys page: list with add key modal and inline delete
 - Shared resource components: filter bar, pagination, empty state, bulk action bar, delete confirmation modal
 - Wizard shell: useWizard hook with step state, validation, localStorage auto-save, progress bar, back/next footer
@@ -220,7 +234,7 @@ Generic, reusable UI components (navigation, layout, data display) belong in the
 - Instance detail page: 4-tab layout (overview specs, logs terminal, networking/volumes, settings/danger zone) with start/stop/reboot/delete actions
 - Volume detail page: size, dates, delete with high-risk confirmation
 - Domain detail page: DNS configuration code block, linked resource info, delete
-- Website detail page: two-column card layout (ACCESS cards left, VERSION card right on lg+), info row (framework, version, size, dates), default gateway URL (CIDv1), alternative gateways template, ENS gateways setup instructions, current version card (volume link, item hash, IPFS CID v0/v1), delete
+- Website detail page: two-column card layout (ACCESS cards left, VERSION card right on lg+), info row (framework, version, size, dates), default gateway URL (CIDv1), alternative gateways template, ENS gateways setup instructions, current version card (volume link, item hash, IPFS CID v0/v1), volume missing detection (error badge, warning alert, unavailable size), delete
 - Wallet connection: Reown AppKit integration, multi-chain support (ETH, AVAX, BASE, SOL), navbar wallet button with chain badge, provider type guards
 - Payment components: payment method toggle (Hold/Stream), cost breakdown with line items, insufficient funds alert, checkout summary composite for wizard footers
 - Payment hooks: usePricing (cached pricing aggregate), useCostEstimate (reactive cost computation), useCanAfford (balance check with React Query)
