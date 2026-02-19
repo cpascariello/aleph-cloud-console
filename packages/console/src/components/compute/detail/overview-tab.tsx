@@ -43,7 +43,7 @@ function InstanceDetailsCard({ instance }: { instance: Instance }) {
 
   return (
     <TerminalCard tag="SYS" label="Instance Details">
-      <div className="flex flex-col gap-3 p-4">
+      <div className="flex flex-col gap-3 p-4 overflow-hidden">
         <div className="flex items-center gap-3 text-sm">
           <HudLabel>Item Hash</HudLabel>
           <span className="font-mono text-xs truncate">{instance.id}</span>
@@ -68,16 +68,16 @@ function InstanceDetailsCard({ instance }: { instance: Instance }) {
           </div>
         </div>
         <GlowLine />
-        <div className="flex items-center gap-3 text-sm">
+        <div className="flex items-center gap-3 text-sm min-w-0">
           <HudLabel>Explorer</HudLabel>
           <a
             href={instance.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-accent hover:underline font-mono text-xs inline-flex items-center gap-1"
+            className="text-accent hover:underline font-mono text-xs inline-flex items-center gap-1 min-w-0"
           >
-            {instance.url}
-            <ExternalLink size={12} />
+            <span className="truncate">{instance.url}</span>
+            <ExternalLink size={12} className="shrink-0" />
           </a>
         </div>
         <GlowLine />

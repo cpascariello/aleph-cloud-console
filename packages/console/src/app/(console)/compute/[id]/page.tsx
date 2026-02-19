@@ -81,7 +81,7 @@ export default function InstanceDetailPage({
       <PageHeader />
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px]">
         {/* Main content */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 min-w-0">
           {/* Header */}
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-4">

@@ -200,7 +200,12 @@ export class SSHKeyManager implements EntityManager<SSHKey, AddSSHKey> {
       id: post.item_hash,
       ...content,
       name: content.label || 'Unnamed SSH key',
-      url: getExplorerURL(post.item_hash),
+      url: getExplorerURL({
+        hash: post.item_hash,
+        chain: post.chain,
+        sender: post.sender,
+        messageType: post.type,
+      }),
       size: convertByteUnits(
         new Blob([content.key]).size,
         'B',

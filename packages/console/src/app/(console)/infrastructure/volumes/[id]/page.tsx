@@ -185,20 +185,20 @@ export default function VolumeDetailPage({
                           <span>{relativeTime(volume.date)}</span>
                         </div>
                         <GlowLine />
-                        <div className="flex items-center gap-3 text-sm">
+                        <div className="flex items-center gap-3 text-sm min-w-0">
                           <HudLabel>Explorer</HudLabel>
                           <a
                             href={volume.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="font-mono text-xs text-accent hover:underline truncate"
+                            className="font-mono text-xs text-accent hover:underline inline-flex items-center gap-1 min-w-0"
                           >
-                            {truncateHash(volume.url, 16)}
+                            <span className="truncate">{volume.url}</span>
+                            <ExternalLink
+                              size={12}
+                              className="shrink-0"
+                            />
                           </a>
-                          <ExternalLink
-                            size={12}
-                            className="shrink-0 text-muted-foreground"
-                          />
                         </div>
                         <GlowLine />
                         <div className="flex items-center gap-3 text-sm">

@@ -304,7 +304,12 @@ export class VolumeManager
       ...content,
       type: EntityType.Volume,
       volumeType: VolumeType.Existing,
-      url: getExplorerURL(message.item_hash),
+      url: getExplorerURL({
+        hash: message.item_hash,
+        chain: message.chain,
+        sender: message.sender,
+        messageType: message.type,
+      }),
       date: getDate(message.time),
       size: sizesMap[message.item_hash],
       confirmed: !!message.confirmed,

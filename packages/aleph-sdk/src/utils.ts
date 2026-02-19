@@ -10,10 +10,16 @@ export function getDate(time: number | string): string {
 }
 
 /**
- * Get an Aleph explorer URL for a message hash.
+ * Get an Aleph explorer URL for a message.
  */
-export function getExplorerURL(hash: string): string {
-  return `https://explorer.aleph.im/address/ETH/${hash}`
+export function getExplorerURL(params: {
+  hash: string
+  chain: string
+  sender: string
+  messageType: string
+}): string {
+  const { hash, chain, sender, messageType } = params
+  return `https://explorer.aleph.im/address/${chain}/${sender}/message/${messageType}/${hash}`
 }
 
 /**

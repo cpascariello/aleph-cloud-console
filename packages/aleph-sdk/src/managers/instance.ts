@@ -632,7 +632,12 @@ export class InstanceManager<T extends InstanceEntity = Instance>
         ...message.content,
         name: message.content.metadata?.name || 'Unnamed instance',
         type: EntityType.Instance,
-        url: getExplorerURL(message.item_hash),
+        url: getExplorerURL({
+          hash: message.item_hash,
+          chain: message.chain,
+          sender: message.sender,
+          messageType: message.type,
+        }),
         date: getDate(message.time),
         size: message.content.rootfs?.size_mib || 0,
         confirmed: !!message.confirmed,

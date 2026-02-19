@@ -402,7 +402,12 @@ export class ProgramManager
           ...message.content,
           name: message.content.metadata?.name || 'Unnamed program',
           type: EntityType.Program,
-          url: getExplorerURL(message.item_hash),
+          url: getExplorerURL({
+            hash: message.item_hash,
+            chain: message.chain,
+            sender: message.sender,
+            messageType: message.type,
+          }),
           urlVM: `${defaultVMURL}${message.item_hash}`,
           date: getDate(message.time),
           size,
