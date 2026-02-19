@@ -1,92 +1,133 @@
 'use client'
 
 import {
+  CopyButton,
   GlowLine,
   HudLabel,
   TerminalCard,
+  Text,
 } from '@/components/data-terminal'
-import { formatDate, relativeTime } from '@/lib/format'
-import type { Instance } from 'aleph-sdk'
-import { Cpu, MemoryStick, HardDrive, Clock, Key } from 'lucide-react'
+import { useSSHKeys } from '@/hooks/queries/use-ssh-keys'
+import { formatDate, truncateHash } from '@/lib/format'
+import type { Instance, SSHKey } from 'aleph-sdk'
+import { Cpu, ExternalLink, HardDrive, Key, MemoryStick } from 'lucide-react'
 
 interface OverviewTabProps {
   instance: Instance
 }
 
 export function OverviewTab({ instance }: OverviewTabProps) {
+  const { data: sshKeys } = useSSHKeys()
+
+  const authorizedKeys: string[] = instance.authorized_keys ?? []
+
+  const matchedKeys = authorizedKeys.map((pubKey) => {
+    const match = sshKeys?.find((sk) => sk.key === pubKey)
+    return match ?? null
+  })
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <TerminalCard tag="SPECS" label="Resources">
-        <div className="flex flex-col gap-3 p-4">
-          <div className="flex items-center gap-3 text-sm">
+    <div className="flex flex-col gap-4">
+      <InstanceDetailsCard instance={instance} />
+      <SSHKeysCard
+        authorizedKeys={authorizedKeys}
+        matchedKeys={matchedKeys}
+      />
+    </div>
+  )
+}
+
+function InstanceDetailsCard({ instance }: { instance: Instance }) {
+  const vcpus = instance.resources?.vcpus ?? 0
+  const memory = instance.resources?.memory ?? 0
+
+  return (
+    <TerminalCard tag="SYS" label="Instance Details">
+      <div className="flex flex-col gap-3 p-4">
+        <div className="flex items-center gap-3 text-sm">
+          <HudLabel>Item Hash</HudLabel>
+          <span className="font-mono text-xs truncate">{instance.id}</span>
+          <CopyButton text={instance.id} />
+        </div>
+        <GlowLine />
+        <div className="flex items-center gap-6 text-sm">
+          <div className="flex items-center gap-2">
             <Cpu size={14} className="text-accent" />
             <HudLabel>CPU</HudLabel>
-            <span>
-              {String((instance as Record<string, unknown>)['vcpus'] ?? '—')} vCPU
-            </span>
+            <span>{vcpus} vCPU</span>
           </div>
-          <GlowLine />
-          <div className="flex items-center gap-3 text-sm">
+          <div className="flex items-center gap-2">
             <MemoryStick size={14} className="text-accent" />
             <HudLabel>RAM</HudLabel>
-            <span>
-              {String((instance as Record<string, unknown>)['memory'] ?? '—')} MB
-            </span>
+            <span>{memory} MB</span>
           </div>
-          <GlowLine />
-          <div className="flex items-center gap-3 text-sm">
+          <div className="flex items-center gap-2">
             <HardDrive size={14} className="text-accent" />
             <HudLabel>Storage</HudLabel>
             <span>{instance.size ? `${instance.size} MB` : '—'}</span>
           </div>
         </div>
-      </TerminalCard>
-
-      <TerminalCard tag="INFO" label="Details">
-        <div className="flex flex-col gap-3 p-4">
-          <div className="flex items-center gap-3 text-sm">
-            <Clock size={14} className="text-accent" />
-            <HudLabel>Created</HudLabel>
-            <span>{formatDate(instance.date)}</span>
-          </div>
-          <GlowLine />
-          <div className="flex items-center gap-3 text-sm">
-            <Clock size={14} className="text-accent" />
-            <HudLabel>Uptime</HudLabel>
-            <span>{relativeTime(instance.date)}</span>
-          </div>
-          <GlowLine />
-          <div className="flex items-center gap-3 text-sm">
-            <Key size={14} className="text-accent" />
-            <HudLabel>SSH Keys</HudLabel>
-            <span>
-              {(
-                instance as Record<string, unknown>
-              )['authorized_keys']
-                ? 'Configured'
-                : 'None'}
-            </span>
-          </div>
+        <GlowLine />
+        <div className="flex items-center gap-3 text-sm">
+          <HudLabel>Explorer</HudLabel>
+          <a
+            href={instance.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent hover:underline font-mono text-xs inline-flex items-center gap-1"
+          >
+            {instance.url}
+            <ExternalLink size={12} />
+          </a>
         </div>
-      </TerminalCard>
+        <GlowLine />
+        <div className="flex items-center gap-3 text-sm">
+          <HudLabel>Created</HudLabel>
+          <span>{formatDate(instance.date)}</span>
+        </div>
+      </div>
+    </TerminalCard>
+  )
+}
 
-      {instance.url && (
-        <TerminalCard tag="ACCESS" label="Endpoint">
-          <div className="flex flex-col gap-2 p-4">
-            <div className="flex items-center gap-2 text-sm">
-              <HudLabel>URL</HudLabel>
-              <a
-                href={instance.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-accent hover:underline font-mono text-xs"
-              >
-                {instance.url}
-              </a>
-            </div>
-          </div>
-        </TerminalCard>
-      )}
-    </div>
+function SSHKeysCard({
+  authorizedKeys,
+  matchedKeys,
+}: {
+  authorizedKeys: string[]
+  matchedKeys: (SSHKey | null)[]
+}) {
+  return (
+    <TerminalCard tag="AUTH" label="SSH Keys">
+      <div className="flex flex-col gap-3 p-4">
+        {authorizedKeys.length === 0 ? (
+          <Text variant="muted">No SSH keys configured.</Text>
+        ) : (
+          authorizedKeys.map((pubKey, i) => {
+            const match = matchedKeys[i]
+            return (
+              <div key={match?.id ?? i}>
+                <div className="flex items-center gap-3 text-sm">
+                  <Key size={14} className="text-accent" />
+                  {match ? (
+                    <>
+                      <span>{match.label || match.name}</span>
+                      <span className="font-mono text-xs text-muted-foreground">
+                        {truncateHash(match.id)}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="font-mono text-xs text-muted-foreground truncate">
+                      {truncateHash(pubKey, 16)}
+                    </span>
+                  )}
+                </div>
+                {i < authorizedKeys.length - 1 && <GlowLine />}
+              </div>
+            )
+          })
+        )}
+      </div>
+    </TerminalCard>
   )
 }

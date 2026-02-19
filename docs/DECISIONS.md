@@ -18,6 +18,12 @@ Each entry includes:
 
 ---
 
+## Decision #17 - 2026-02-19
+**Context:** Instance detail page missing general information. Payment data (type, chain) displayed inline vs separate tab.
+**Decision:** Payment gets its own tab (between Networking and Settings). Overview tab restructured to vertical card stack (Instance Details + SSH Keys). Hold/PAYG payment display kept minimal (type + chain only) since credits will replace them.
+**Rationale:** Payment as a dedicated tab gives room for the upcoming credits system without cluttering overview. Minimal payment display avoids investing in UI for a payment model being phased out.
+**Alternatives considered:** Payment inline in overview card (rejected — cramped, no room for credits expansion). Full Superfluid stream details (rejected — credits replacing hold/stream soon).
+
 ## Decision #16 - 2026-02-19
 **Context:** Website detail page showed a broken URL pointing to `localhost:3000/storage/volume/{id}` and was missing gateway URLs, IPFS CIDs, version info, and ENS setup instructions compared to the live console.
 **Decision:** Fetch the volume entity to get the IPFS CID from `volume.item_hash` (StoreContent), not from `website.volume_id` (Aleph message hash). Redesign the detail page with full parity: info row, default/alternative/ENS gateways, and current version card.

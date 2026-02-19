@@ -18,6 +18,7 @@ import { PageHeader } from '@/components/shell/page-header'
 import { OverviewTab } from '@/components/compute/detail/overview-tab'
 import { LogsTab } from '@/components/compute/detail/logs-tab'
 import { NetworkingTab } from '@/components/compute/detail/networking-tab'
+import { PaymentTab } from '@/components/compute/detail/payment-tab'
 import { SettingsTab } from '@/components/compute/detail/settings-tab'
 import { useInstance } from '@/hooks/queries/use-instances'
 import { useDeleteInstance } from '@/hooks/mutations/use-delete-resource'
@@ -58,17 +59,9 @@ export default function InstanceDetailPage({
     })
   }
 
-  const vcpus = String(
-    (instance as Record<string, unknown>)['vcpus'] ?? '—',
-  )
-  const memory = String(
-    (instance as Record<string, unknown>)['memory'] ?? '—',
-  )
-  const volumes = (
-    (instance as Record<string, unknown>)['volumes'] as
-      | Array<{ ref?: string; name?: string }>
-      | undefined
-  ) ?? []
+  const vcpus = instance.resources?.vcpus ?? 0
+  const memory = instance.resources?.memory ?? 0
+  const volumes = instance.volumes ?? []
 
   return (
     <div className="flex flex-col gap-6">
@@ -117,6 +110,10 @@ export default function InstanceDetailPage({
               {
                 label: 'Networking',
                 content: <NetworkingTab instance={instance} />,
+              },
+              {
+                label: 'Payment',
+                content: <PaymentTab instance={instance} />,
               },
               {
                 label: 'Settings',
@@ -215,21 +212,31 @@ export default function InstanceDetailPage({
           {volumes.length > 0 && (
             <TerminalCard tag="LINKS" label="Related">
               <div className="flex flex-col gap-3 p-4">
-                {volumes.map((vol, i) => (
-                  <div
-                    key={vol.ref ?? i}
-                    className="flex items-center gap-3 text-sm"
-                  >
-                    <StatusDot variant="success" />
-                    <Badge variant="info">Volume</Badge>
-                    <span className="font-mono text-xs truncate">
-                      {vol.name ||
-                        (vol.ref
-                          ? truncateHash(vol.ref)
-                          : `Volume ${i + 1}`)}
-                    </span>
-                  </div>
-                ))}
+                {volumes.map((vol, i) => {
+                  const ref =
+                    'ref' in vol
+                      ? (vol as { ref?: string }).ref
+                      : undefined
+                  const name =
+                    'name' in vol
+                      ? (vol as { name?: string }).name
+                      : undefined
+                  return (
+                    <div
+                      key={ref ?? i}
+                      className="flex items-center gap-3 text-sm"
+                    >
+                      <StatusDot variant="success" />
+                      <Badge variant="info">Volume</Badge>
+                      <span className="font-mono text-xs truncate">
+                        {name ||
+                          (ref
+                            ? truncateHash(ref)
+                            : `Volume ${i + 1}`)}
+                      </span>
+                    </div>
+                  )
+                })}
               </div>
             </TerminalCard>
           )}

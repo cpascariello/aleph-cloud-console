@@ -118,12 +118,11 @@ Every resource's Settings tab contains at minimum a danger zone:
 
 ### Instance
 
-**Tabs:** Overview | Logs | Networking | Settings
+**Tabs:** Overview | Logs | Networking | Payment | Settings
 
-**Overview tab (two-column cards):**
-- SPECS card: CPU, RAM, storage (with Lucide icons)
-- INFO card: created date, uptime, payment type
-- ACCESS card (conditional): endpoint URL
+**Overview tab (vertical card stack):**
+- SYS card: item hash (copyable), specs row (CPU/RAM/Storage), explorer link, created date
+- AUTH card: SSH keys cross-referenced with user's key list (name + truncated ID)
 
 **Logs tab:**
 - Log level filter dropdown + search input + auto-scroll toggle
@@ -133,14 +132,17 @@ Every resource's Settings tab contains at minimum a danger zone:
 - STORAGE card: attached volumes with mount points, "Attach Volume" drawer button
 - DNS card: linked domains, "Link Domain" drawer button
 
+**Payment tab:**
+- PAY card: payment type (Hold/Stream), blockchain name, start date
+
 **Settings tab:**
 - CONFIG card: name, SSH keys reference, env vars
 - DANGER card: delete with highRisk modal
 
 **Sidebar:**
-- Info: status, vCPUs, RAM, storage, payment method, created date
+- Info: status, vCPUs, RAM, storage, created date
 - Actions: Start, Stop, Reboot + Delete (danger)
-- Related: linked volumes, linked domains
+- Related: linked volumes
 
 ---
 

@@ -15,11 +15,6 @@ Ideas and scope creep captured for later consideration.
 
 ## Open Items
 
-### 2026-02-19 - Instance detail: General information section
-**Source:** Comparison with live console (v1) — screenshot 01
-**Description:** The overview tab is missing most of the instance metadata: item hash (with copy), cores/RAM/HDD in a compact row, explorer link, Hosting CRN (name, URL, version), SSH key names + IDs (not just "Configured"), and Payment block (token amount, type Hold/Stream, blockchain, start date). Currently only shows specs in cards and a date.
-**Priority:** High
-
 ### 2026-02-19 - Instance detail: Connection methods (IPv4/IPv6 + port forwarding)
 **Source:** Comparison with live console (v1) — screenshot 02
 **Description:** Add Connection Methods section with IPv4/IPv6 tabs. Each tab shows SSH command (copyable) and the IP address. IPv4 tab also shows port forwarding table (source/destination, TCP/UDP toggles, Add button). Requires fetching execution status from CRN to get allocated IPs and mapped ports.
@@ -84,6 +79,10 @@ Ideas and scope creep captured for later consideration.
 ---
 
 ## Completed / Rejected
+
+### 2026-02-19 - Instance detail: General information section
+**Completed:** 2026-02-19
+**Delivered:** Overview tab rewritten as vertical card stack: Instance Details card (item hash with copy, specs row, explorer link, created date) + SSH Keys card (cross-referenced with user's key list for names). New Payment tab (type Hold/Stream, blockchain name, start date). Fixed sidebar resources field access bug.
 
 ### 2026-02-19 - Unified detail page template for all resources
 **Completed:** 2026-02-19
