@@ -13,9 +13,11 @@ import { ResourcePagination } from '@/components/resources/resource-pagination'
 import { ResourceEmptyState } from '@/components/resources/resource-empty-state'
 import { InstanceRowActions } from '@/components/compute/instance-row-actions'
 import { useInstances } from '@/hooks/queries/use-instances'
+import { useInstanceStatuses } from '@/hooks/queries/use-instance-statuses'
 import { useDeleteInstance } from '@/hooks/mutations/use-delete-resource'
 import { useResourceList } from '@/hooks/use-resource-list'
 import { truncateHash, relativeTime } from '@/lib/format'
+import { deriveInstanceStatus } from '@/lib/instance-status'
 import type { Instance } from 'aleph-sdk'
 
 type RowShape = {
@@ -45,6 +47,7 @@ export function InstancesTab() {
       return 0
     },
   })
+  const statusMap = useInstanceStatuses(instances)
 
   if (isPending) {
     return <Skeleton variant="card" height="300px" />
@@ -75,14 +78,20 @@ export function InstancesTab() {
         {inst.name || truncateHash(inst.id)}
       </Link>
     ),
-    status: (
-      <span className="flex items-center gap-2">
-        <StatusDot variant={inst.confirmed ? 'success' : 'warning'} />
-        <span className="text-sm">
-          {inst.confirmed ? 'Running' : 'Pending'}
+    status: (() => {
+      const entry = statusMap.get(inst.id)
+      const derived = deriveInstanceStatus(
+        entry?.data,
+        entry?.isError ?? false,
+        !!inst.confirmed,
+      )
+      return (
+        <span className="flex items-center gap-2">
+          <StatusDot variant={derived.dotVariant} />
+          <span className="text-sm">{derived.label}</span>
         </span>
-      </span>
-    ),
+      )
+    })(),
     date: (
       <span className="text-muted-foreground text-sm">
         {relativeTime(inst.date)}
