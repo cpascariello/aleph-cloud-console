@@ -9,12 +9,17 @@ import {
   GlowLine,
   Badge,
   ProgressBar,
+  Button,
+  StatusDot,
+  TerminalCard,
   Text,
 } from '@/components/data-terminal'
 import { WizardShell } from '@/components/wizard/wizard-shell'
 import { WizardStep } from '@/components/wizard/wizard-step'
 import { useWizard, type WizardStep as WizardStepDef } from '@/hooks/use-wizard'
+import { useCreateWebsite } from '@/hooks/mutations/use-create-website'
 import { FileManager, WebsiteFrameworkId } from 'aleph-sdk'
+import type { AddWebsite } from 'aleph-sdk'
 import { cn } from '@/lib/cn'
 import { FileCode, FolderUp, CheckCircle2, AlertTriangle, X } from 'lucide-react'
 
@@ -328,6 +333,78 @@ function ReviewWebsiteStep({
   )
 }
 
+type DeployState = 'idle' | 'deploying' | 'success' | 'error'
+
+function DeployStatusView({
+  state,
+  error,
+  onRetry,
+}: {
+  state: Exclude<DeployState, 'idle'>
+  error?: string | undefined
+  onRetry: () => void
+}) {
+  return (
+    <WizardStep title="Deploying Website">
+      <TerminalCard tag="DEPLOY" label="Deployment Progress">
+        <div className="flex flex-col gap-4 p-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3 font-mono text-sm">
+              <StatusDot
+                variant={state === 'deploying' ? 'warning' : 'success'}
+              />
+              <span className={state === 'deploying' ? 'text-foreground' : 'text-accent'}>
+                [{state === 'deploying' ? '\u25CF' : '\u2713'}] Uploading volume to network
+              </span>
+            </div>
+            <div className="flex items-center gap-3 font-mono text-sm">
+              <StatusDot
+                variant={
+                  state === 'success'
+                    ? 'success'
+                    : state === 'error'
+                      ? 'error'
+                      : 'neutral'
+                }
+              />
+              <span
+                className={
+                  state === 'success'
+                    ? 'text-accent'
+                    : state === 'error'
+                      ? 'text-foreground'
+                      : 'text-muted-foreground'
+                }
+              >
+                [{state === 'success' ? '\u2713' : state === 'error' ? '\u2717' : ' '}] Publishing website record
+              </span>
+            </div>
+          </div>
+
+          {state === 'deploying' && <ProgressBar indeterminate />}
+          {state === 'success' && <ProgressBar value={100} />}
+          {state === 'error' && (
+            <div className="flex flex-col gap-3">
+              <div className="font-mono text-sm text-destructive">
+                Error: {error ?? 'Deployment failed'}
+              </div>
+              <Button variant="secondary" size="sm" onClick={onRetry}>
+                Retry
+              </Button>
+            </div>
+          )}
+
+          {state === 'success' && (
+            <Text variant="small" className="text-accent">
+              Website deployed
+            </Text>
+          )}
+        </div>
+      </TerminalCard>
+    </WizardStep>
+  )
+}
+
 interface WebsiteWizardContentProps {
   variant?: 'page' | 'drawer'
   onComplete?: () => void
@@ -340,16 +417,48 @@ export function WebsiteWizardContent({
   onBack,
 }: WebsiteWizardContentProps) {
   const router = useRouter()
+  const createWebsite = useCreateWebsite()
+  const [deployState, setDeployState] = useState<DeployState>('idle')
+  const [deployError, setDeployError] = useState<string>()
 
   const handleComplete = useCallback(
-    (_data: Record<string, unknown>) => {
-      if (onComplete) {
-        onComplete()
-      } else {
-        router.push('/infrastructure/websites')
+    async (data: Record<string, unknown>) => {
+      const frameworkData = data['framework'] as
+        | WebsiteFrameworkData
+        | undefined
+      const configData = data['configure'] as
+        | WebsiteConfigData
+        | undefined
+
+      if (!frameworkData || !configData) return
+
+      const input: AddWebsite = {
+        name: configData.name,
+        tags: [],
+        framework: frameworkData.framework as WebsiteFrameworkId,
+        website: { cid: configData.cid },
+      }
+
+      setDeployState('deploying')
+      setDeployError(undefined)
+
+      try {
+        const website = await createWebsite.mutateAsync(input)
+        setDeployState('success')
+        localStorage.removeItem('wizard-website-new')
+        const detailPath = `/infrastructure/websites/${website.id}`
+        setTimeout(() => {
+          onComplete?.()
+          router.push(detailPath)
+        }, 1500)
+      } catch (err) {
+        setDeployError(
+          err instanceof Error ? err.message : 'Deployment failed',
+        )
+        setDeployState('error')
       }
     },
-    [router, onComplete],
+    [createWebsite, onComplete, router],
   )
 
   const wizard = useWizard({
@@ -394,6 +503,16 @@ export function WebsiteWizardContent({
     ],
     [framework, config, handleFrameworkChange, handleConfigChange, wizard.setCanGoNext],
   )
+
+  if (deployState !== 'idle') {
+    return (
+      <DeployStatusView
+        state={deployState}
+        error={deployError}
+        onRetry={() => setDeployState('idle')}
+      />
+    )
+  }
 
   return (
     <WizardShell

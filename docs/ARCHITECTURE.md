@@ -261,6 +261,29 @@ When the Aleph API returns data that isn't currently visible in the console:
 5. **Add to UI:** Update the list component's `RowShape` type and column definitions, or add to the detail page layout.
 6. **Update ARCHITECTURE.md** with the new field's semantics if non-obvious.
 
+### Wizard Deploy Flow Pattern
+**Context:** Wizard completion triggers on-chain deployment via SDK manager `addSteps()` generators. Each generator yield is a wallet signing step.
+**Approach:** Each resource type has a `useCreate[Resource]` mutation hook that manually iterates the generator (`while`/`next()`) to capture the return value. Info toasts fire before each wallet popup to explain what the user is signing. The wizard content component tracks deploy state (`idle` → `deploying` → `success`/`error`) and replaces the wizard steps with a deploy status view (TerminalCard with StatusDot progress steps and ProgressBar).
+
+**Key pattern — manual iteration vs `for await`:**
+```typescript
+// WRONG: for-await discards the generator's return value
+for await (const _ of manager.addSteps(input)) { ... }
+const result = await manager.get(input.name) // races with API indexing
+
+// RIGHT: manual iteration captures the return value directly
+const steps = manager.addSteps(input)
+while (true) {
+  const { value, done } = await steps.next()
+  if (done) return value // the created entity
+}
+```
+
+**Post-deploy redirect:** After success, navigate to the detail page (`/infrastructure/websites/${website.id}`) rather than the list page. The detail page handles pending states (skeleton loading, "Pending" badge, volume-missing alert) gracefully.
+
+**Key files:** `packages/console/src/hooks/mutations/use-create-instance.ts`, `packages/console/src/hooks/mutations/use-create-website.ts`, `packages/console/src/components/infrastructure/website-wizard-content.tsx`
+**Notes:** When adding deploy flow to new wizards, always use manual iteration. The `addSteps` generators return the created entity, which may not yet be indexed by the API (`manager.get()` can return `undefined` immediately after creation, especially for aggregate-based resources like websites).
+
 ### Adding a New Wizard Step
 
 1. Create step component in the resource's `wizard/` directory
