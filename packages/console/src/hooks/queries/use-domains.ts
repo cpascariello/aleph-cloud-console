@@ -21,9 +21,9 @@ export function useDomains() {
 export function useDomain(id: string) {
   const { domainManager } = useManagers()
 
-  return useQuery<Domain | undefined>({
+  return useQuery<Domain | null>({
     queryKey: domainKeys.detail(id),
-    queryFn: () => domainManager.get(id),
+    queryFn: async () => (await domainManager.get(id)) ?? null,
     enabled: Boolean(id),
   })
 }

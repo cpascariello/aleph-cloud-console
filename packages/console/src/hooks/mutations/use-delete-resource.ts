@@ -7,6 +7,14 @@ import { domainKeys } from '@/hooks/queries/use-domains'
 import { sshKeyKeys } from '@/hooks/queries/use-ssh-keys'
 import { programKeys } from '@/hooks/queries/use-programs'
 import { websiteKeys } from '@/hooks/queries/use-websites'
+import type {
+  Instance,
+  Volume,
+  Domain,
+  SSHKey,
+  Program,
+  Website,
+} from 'aleph-sdk'
 
 export function useDeleteInstance() {
   const { instanceManager } = useManagers()
@@ -19,8 +27,12 @@ export function useDeleteInstance() {
         // Each yield is a signing step
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: instanceKeys.all })
+    onSuccess: (_, id) => {
+      queryClient.removeQueries({ queryKey: instanceKeys.detail(id) })
+      queryClient.setQueriesData<Instance[]>(
+        { queryKey: instanceKeys.all },
+        (old) => Array.isArray(old) ? old.filter((i) => i.id !== id) : old,
+      )
       queryClient.invalidateQueries({ queryKey: sshKeyKeys.all })
       queryClient.invalidateQueries({ queryKey: domainKeys.all })
       queryClient.invalidateQueries({ queryKey: volumeKeys.all })
@@ -43,8 +55,12 @@ export function useDeleteVolume() {
         // Each yield is a signing step
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: volumeKeys.all })
+    onSuccess: (_, id) => {
+      queryClient.removeQueries({ queryKey: volumeKeys.detail(id) })
+      queryClient.setQueriesData<Volume[]>(
+        { queryKey: volumeKeys.all },
+        (old) => Array.isArray(old) ? old.filter((v) => v.id !== id) : old,
+      )
       addToast({ message: 'Volume deleted', variant: 'success' })
     },
     onError: (error) => {
@@ -64,8 +80,12 @@ export function useDeleteDomain() {
         // Each yield is a signing step
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: domainKeys.all })
+    onSuccess: (_, id) => {
+      queryClient.removeQueries({ queryKey: domainKeys.detail(id) })
+      queryClient.setQueriesData<Domain[]>(
+        { queryKey: domainKeys.all },
+        (old) => Array.isArray(old) ? old.filter((d) => d.id !== id) : old,
+      )
       addToast({ message: 'Domain deleted', variant: 'success' })
     },
     onError: (error) => {
@@ -85,8 +105,12 @@ export function useDeleteSSHKey() {
         // Each yield is a signing step
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: sshKeyKeys.all })
+    onSuccess: (_, id) => {
+      queryClient.removeQueries({ queryKey: sshKeyKeys.detail(id) })
+      queryClient.setQueriesData<SSHKey[]>(
+        { queryKey: sshKeyKeys.all },
+        (old) => Array.isArray(old) ? old.filter((k) => k.id !== id) : old,
+      )
       addToast({ message: 'SSH key deleted', variant: 'success' })
     },
     onError: (error) => {
@@ -106,8 +130,12 @@ export function useDeleteProgram() {
         // Each yield is a signing step
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: programKeys.all })
+    onSuccess: (_, id) => {
+      queryClient.removeQueries({ queryKey: programKeys.detail(id) })
+      queryClient.setQueriesData<Program[]>(
+        { queryKey: programKeys.all },
+        (old) => Array.isArray(old) ? old.filter((p) => p.id !== id) : old,
+      )
       queryClient.invalidateQueries({ queryKey: domainKeys.all })
       queryClient.invalidateQueries({ queryKey: volumeKeys.all })
       addToast({ message: 'Function deleted', variant: 'success' })
@@ -129,8 +157,12 @@ export function useDeleteWebsite() {
         // Each yield is a signing step
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: websiteKeys.all })
+    onSuccess: (_, id) => {
+      queryClient.removeQueries({ queryKey: websiteKeys.detail(id) })
+      queryClient.setQueriesData<Website[]>(
+        { queryKey: websiteKeys.all },
+        (old) => Array.isArray(old) ? old.filter((w) => w.id !== id) : old,
+      )
       queryClient.invalidateQueries({ queryKey: domainKeys.all })
       queryClient.invalidateQueries({ queryKey: volumeKeys.all })
       addToast({ message: 'Website deleted', variant: 'success' })

@@ -21,9 +21,9 @@ export function useVolumes() {
 export function useVolume(id: string) {
   const { volumeManager } = useManagers()
 
-  return useQuery<Volume | undefined>({
+  return useQuery<Volume | null>({
     queryKey: volumeKeys.detail(id),
-    queryFn: () => volumeManager.get(id),
+    queryFn: async () => (await volumeManager.get(id)) ?? null,
     enabled: Boolean(id),
   })
 }

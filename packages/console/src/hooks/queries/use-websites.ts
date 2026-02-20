@@ -21,9 +21,9 @@ export function useWebsites() {
 export function useWebsite(id: string) {
   const { websiteManager } = useManagers()
 
-  return useQuery<Website | undefined>({
+  return useQuery<Website | null>({
     queryKey: websiteKeys.detail(id),
-    queryFn: () => websiteManager.get(id),
+    queryFn: async () => (await websiteManager.get(id)) ?? null,
     enabled: Boolean(id),
   })
 }
