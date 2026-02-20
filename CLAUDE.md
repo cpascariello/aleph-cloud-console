@@ -246,7 +246,7 @@ Generic, reusable UI components (navigation, layout, data display) belong in the
 - Shared resource components: filter bar, pagination, empty state, bulk action bar, delete confirmation modal
 - Wizard shell: useWizard hook with step state, validation, localStorage auto-save, progress bar, back/next footer
 - Instance creation wizard: 5 steps (template, configure, access, networking, review) + deploy progress terminal
-- Volume creation wizard (2 steps), Domain creation wizard (2 steps), Website creation wizard (3 steps)
+- Volume creation wizard (2 steps), Domain creation wizard (2 steps), Website creation wizard (3 steps) + deploy flow with signing step toasts and redirect to detail page
 - Instance detail page: 5-tab layout (overview with instance details + SSH keys, logs terminal, networking with connection methods/port forwarding/volumes/domains, payment type/chain, settings/danger zone) with start/stop/reboot/delete actions
 - Connection methods: IPv4/IPv6 tabs with SSH commands and IP addresses (copyable), CRN status polling (30s), two error states (not allocated vs CRN unreachable), read-only port forwarding table
 - Volume detail page: size, dates, delete with high-risk confirmation

@@ -23,8 +23,10 @@ for (
 }
 const turboRoot = commonParts.join(path.sep) || path.sep;
 
+const isStaticExport = process.env.NODE_ENV === "production";
+
 const nextConfig: NextConfig = {
-  output: "export",
+  output: isStaticExport ? "export" : undefined,
   trailingSlash: true,
   images: { unoptimized: true },
   outputFileTracingRoot: turboRoot,

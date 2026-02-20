@@ -18,6 +18,12 @@ Each entry includes:
 
 ---
 
+## Decision #19 - 2026-02-20
+**Context:** Wiring the website wizard to actually deploy. The `handleComplete` callback closed the drawer/redirected but never called the SDK mutation. Two sub-decisions emerged during implementation.
+**Decision:** (1) Use manual generator iteration (`while`/`next()`) instead of `for await` to capture the created entity from `addSteps()`. (2) Post-deploy, redirect to the website detail page instead of the list page.
+**Rationale:** (1) `for await` discards the generator's return value. Calling `websiteManager.get(name)` after the loop races with API aggregate indexing — the website may not be indexed yet, returning `undefined` and crashing on `.id` access. Manual iteration (same pattern as `WebsiteManager.add()`) gets the entity directly from the generator return. (2) The list page doesn't immediately show the new website (query cache race), which feels broken. The detail page handles pending states gracefully (skeleton, "Pending" badge, volume-missing alert) so it's a natural landing page.
+**Alternatives considered:** (1) Adding a retry/delay to `get()` (rejected: fragile, generator already has the data). (2) Redirecting to list page (rejected: new website not visible yet, confusing UX).
+
 ## Decision #18 - 2026-02-19
 **Context:** Instance status badges showed on-chain confirmation state, not real CRN execution state. Needed to show real status on both list and detail pages.
 **Decision:** Three simplified badge states (Running, Booting, Stopped) plus Not Allocated and Unknown. Alert banner between header and tabs for non-running states on detail pages. Per-instance CRN polling on list page (60s interval). Established Detail Page Alert Pattern as cross-cutting pattern for all resource detail pages.
