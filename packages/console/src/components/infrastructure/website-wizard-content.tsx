@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   SearchInput,
@@ -8,13 +8,15 @@ import {
   HudLabel,
   GlowLine,
   Badge,
+  ProgressBar,
   Text,
 } from '@/components/data-terminal'
 import { WizardShell } from '@/components/wizard/wizard-shell'
 import { WizardStep } from '@/components/wizard/wizard-step'
 import { useWizard, type WizardStep as WizardStepDef } from '@/hooks/use-wizard'
-import { WebsiteFrameworkId } from 'aleph-sdk'
-import { FileCode } from 'lucide-react'
+import { FileManager, WebsiteFrameworkId } from 'aleph-sdk'
+import { cn } from '@/lib/cn'
+import { FileCode, FolderUp, CheckCircle2, AlertTriangle, X } from 'lucide-react'
 
 const STEPS: WizardStepDef[] = [
   { id: 'framework', label: 'Framework' },
@@ -36,6 +38,161 @@ interface WebsiteFrameworkData {
 interface WebsiteConfigData {
   name: string
   cid: string
+}
+
+type UploadState =
+  | { status: 'idle' }
+  | { status: 'uploading'; fileCount: number }
+  | { status: 'success'; cid: string; fileCount: number }
+  | { status: 'error'; message: string }
+
+function FolderUploadZone({
+  onUploaded,
+  initialCid,
+}: {
+  onUploaded: (cid: string) => void
+  initialCid: string
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [upload, setUpload] = useState<UploadState>(
+    initialCid ? { status: 'success', cid: initialCid, fileCount: 0 } : { status: 'idle' },
+  )
+  const [dragOver, setDragOver] = useState(false)
+
+  async function handleFiles(files: File[]) {
+    if (files.length === 0) return
+    setUpload({ status: 'uploading', fileCount: files.length })
+
+    try {
+      const cid = await FileManager.uploadFolder(files)
+      if (!cid) throw new Error('No CID returned from IPFS')
+      setUpload({ status: 'success', cid, fileCount: files.length })
+      onUploaded(cid)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Upload failed'
+      setUpload({ status: 'error', message })
+    }
+  }
+
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? [])
+    void handleFiles(files)
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault()
+    setDragOver(false)
+    const files = Array.from(e.dataTransfer.files)
+    void handleFiles(files)
+  }
+
+  function handleClear() {
+    setUpload({ status: 'idle' })
+    onUploaded('')
+    if (inputRef.current) inputRef.current.value = ''
+  }
+
+  if (upload.status === 'uploading') {
+    return (
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-col items-center gap-3 border border-border bg-foreground/[0.02] px-4 py-6">
+          <Text variant="small" className="text-foreground/50">
+            Uploading {upload.fileCount} file{upload.fileCount !== 1 ? 's' : ''} to IPFS...
+          </Text>
+          <ProgressBar indeterminate className="w-full max-w-xs" />
+        </div>
+      </div>
+    )
+  }
+
+  if (upload.status === 'success') {
+    return (
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-3 border border-accent/30 bg-accent/[0.04] px-4 py-3">
+          <CheckCircle2 size={16} className="shrink-0 text-accent" />
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <Text variant="small" className="text-accent">
+              Uploaded to IPFS
+              {upload.fileCount > 0 && ` (${upload.fileCount} file${upload.fileCount !== 1 ? 's' : ''})`}
+            </Text>
+            <span className="truncate font-mono text-xs text-foreground/50">
+              {upload.cid}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={handleClear}
+            className="shrink-0 text-foreground/30 transition-colors hover:text-foreground/60"
+            aria-label="Clear upload"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (upload.status === 'error') {
+    return (
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-col items-center gap-3 border border-destructive/30 bg-destructive/[0.04] px-4 py-6">
+          <AlertTriangle size={20} className="text-destructive" />
+          <Text variant="small" className="text-destructive">
+            {upload.message}
+          </Text>
+          <button
+            type="button"
+            onClick={() => setUpload({ status: 'idle' })}
+            className="font-display text-xs text-foreground/50 underline transition-colors hover:text-foreground/80"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        onDragOver={(e) => {
+          e.preventDefault()
+          setDragOver(true)
+        }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={handleDrop}
+        className={cn(
+          'flex cursor-pointer flex-col items-center gap-2 border border-dashed px-4 py-6 transition-colors',
+          dragOver
+            ? 'border-accent bg-accent/[0.04]'
+            : 'border-border bg-foreground/[0.02] hover:border-border-hover hover:bg-foreground/[0.04]',
+        )}
+      >
+        <FolderUp size={24} className={cn(
+          'transition-colors',
+          dragOver ? 'text-accent' : 'text-foreground/30',
+        )} />
+        <Text variant="small" className={cn(
+          'transition-colors',
+          dragOver ? 'text-accent' : 'text-foreground/50',
+        )}>
+          Drop your build folder here or click to browse
+        </Text>
+      </button>
+      <input
+        ref={inputRef}
+        type="file"
+        className="hidden"
+        onChange={handleInputChange}
+        /* @ts-expect-error -- webkitdirectory is not in React's type defs */
+        webkitdirectory=""
+        directory=""
+        multiple
+      />
+    </div>
+  )
 }
 
 function FrameworkStep({
@@ -89,10 +246,14 @@ function ConfigureWebsiteStep({
     onChange({ name: name.trim(), cid: cid.trim() })
   }, [name, cid, onChange, setValid])
 
+  const handleUploaded = useCallback((uploadedCid: string) => {
+    setCid(uploadedCid)
+  }, [])
+
   return (
     <WizardStep
       title="Configure Website"
-      description="Name your website and provide the IPFS CID of your build output."
+      description="Upload your build folder and name your website."
     >
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
@@ -104,15 +265,8 @@ function ConfigureWebsiteStep({
           />
         </div>
         <div className="flex flex-col gap-1">
-          <HudLabel>Build Output CID</HudLabel>
-          <SearchInput
-            value={cid}
-            onChange={setCid}
-            placeholder="Qm... or bafy..."
-          />
-          <Text variant="small" className="text-muted-foreground mt-1">
-            Upload your build folder to IPFS first, then paste the CID here.
-          </Text>
+          <HudLabel>Build Folder</HudLabel>
+          <FolderUploadZone onUploaded={handleUploaded} initialCid={cid} />
         </div>
       </div>
     </WizardStep>
