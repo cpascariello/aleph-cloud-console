@@ -54,9 +54,16 @@ aleph-cloud-console/          # Monorepo root
 
 ### React Query for Server State
 **Context:** All console state comes from the Aleph network (server state). Need caching, background refetching, optimistic updates.
-**Approach:** One `useQuery` hook per entity type, one `useMutation` per action. Cascade invalidation via `queryClient.invalidateQueries()`.
+**Approach:** One `useQuery` hook per entity type, one `useMutation` per action. Cascade invalidation via `queryClient.invalidateQueries()` for related entities; optimistic cache updates for the primary entity on delete.
 **Key files:** `packages/console/src/hooks/queries/`, `packages/console/src/hooks/mutations/`
 **Notes:** No Redux or global store. URL params for UI state (filters, pagination).
+
+**Detail query hooks return `null`, not `undefined`:** TanStack Query v5 reserves `undefined` as "no data yet" — query functions must not return it. All detail hooks (`useWebsite`, `useInstance`, etc.) coalesce missing resources to `null`: `async () => (await manager.get(id)) ?? null`.
+
+**Delete mutation cache strategy:** Aleph's eventual consistency means the API may still return a deleted resource briefly after deletion. Delete mutations use a three-step approach instead of simple invalidation:
+1. `removeQueries(detail key)` — evicts the detail query so a still-mounted detail page doesn't refetch the deleted resource
+2. `setQueriesData(list key, filter)` — optimistically removes the item from all matching list caches (with `Array.isArray` guard to skip detail query entries that share the key prefix)
+3. `invalidateQueries` only for *related* entity types (e.g., domains/volumes after website delete) — never for the deleted entity's own list query, since the API race would overwrite the optimistic removal. The 30s `refetchInterval` on list queries handles eventual re-sync.
 
 **Account-gated queries:** All user-specific list queries (`useVolumes`, `useInstances`, `usePrograms`, `useDomains`, `useSSHKeys`, `useWebsites`) are gated with `enabled: !!accountAddress` and include the account address in their query key. This prevents queries from firing before the wallet account resolves (race condition with auto-reconnect) and ensures each account gets its own cache entry. Public queries (`useNetworkStats`, `usePricing`) have no account gate. Components consuming gated queries use `isPending` (not `isLoading`) for skeleton states — `isPending` is true both when the query is disabled (waiting for account) and when it's actively fetching for the first time.
 

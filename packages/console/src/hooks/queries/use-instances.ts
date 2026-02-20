@@ -21,9 +21,9 @@ export function useInstances() {
 export function useInstance(id: string) {
   const { instanceManager } = useManagers()
 
-  return useQuery<Instance | undefined>({
+  return useQuery<Instance | null>({
     queryKey: instanceKeys.detail(id),
-    queryFn: () => instanceManager.get(id),
+    queryFn: async () => (await instanceManager.get(id)) ?? null,
     enabled: Boolean(id),
   })
 }

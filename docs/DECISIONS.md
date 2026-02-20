@@ -18,6 +18,12 @@ Each entry includes:
 
 ---
 
+## Decision #20 - 2026-02-20
+**Context:** Deleting a website from its detail page threw "Query data cannot be undefined" (TanStack Query v5 rejects `undefined` from query functions). Deleting from the list page left the item visible until manual refresh.
+**Decision:** Three-part fix for all delete mutations: (1) Detail query hooks return `null` instead of `undefined` for missing resources. (2) `removeQueries` evicts the detail query on delete so the still-mounted detail page doesn't refetch. (3) `setQueriesData` with `Array.isArray` guard optimistically filters the deleted item from list caches. No `invalidateQueries` for the entity's own list query — the 30s `refetchInterval` handles re-sync.
+**Rationale:** TQ5 reserves `undefined` as "no data yet" — query functions must return `null` for "not found". `invalidateQueries({ queryKey: ['websites'] })` uses prefix matching, hitting both list and detail queries. On the detail page, this triggers a refetch of the deleted resource (returns `undefined` → crash). On the list page, Aleph's eventual consistency means the API still returns the deleted item briefly, overwriting the optimistic removal. Dropping self-invalidation and relying on `setQueriesData` + polling avoids both races.
+**Alternatives considered:** `removeQueries` alone (rejected: component re-registers the query immediately). Throwing on not-found (rejected: changes error handling contract for all detail pages).
+
 ## Decision #19 - 2026-02-20
 **Context:** Wiring the website wizard to actually deploy. The `handleComplete` callback closed the drawer/redirected but never called the SDK mutation. Two sub-decisions emerged during implementation.
 **Decision:** (1) Use manual generator iteration (`while`/`next()`) instead of `for await` to capture the created entity from `addSteps()`. (2) Post-deploy, redirect to the website detail page instead of the list page.

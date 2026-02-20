@@ -21,9 +21,9 @@ export function usePrograms() {
 export function useProgram(id: string) {
   const { programManager } = useManagers()
 
-  return useQuery<Program | undefined>({
+  return useQuery<Program | null>({
     queryKey: programKeys.detail(id),
-    queryFn: () => programManager.get(id),
+    queryFn: async () => (await programManager.get(id)) ?? null,
     enabled: Boolean(id),
   })
 }

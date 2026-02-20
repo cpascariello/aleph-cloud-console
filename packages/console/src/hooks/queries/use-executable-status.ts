@@ -7,7 +7,7 @@ export const executableStatusKeys = {
   detail: (id: string) => ['executable-status', id] as const,
 }
 
-export function useExecutableStatus(instance: Instance | undefined) {
+export function useExecutableStatus(instance: Instance | null | undefined) {
   const { instanceManager } = useManagers()
 
   return useQuery<ExecutableStatus | null>({
