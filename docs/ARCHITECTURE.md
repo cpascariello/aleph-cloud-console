@@ -119,7 +119,7 @@ Examples:
 ### Resource Detail Page Pattern
 **Context:** All resource types need detail views with consistent structure: header with status, tabbed content, sidebar with actions and info, delete confirmation.
 **Approach:** Every detail page uses `use(params)` to unwrap Next.js 16 async params. Unified layout: `PageHeader` (breadcrumbs) → `grid-cols-1 lg:grid-cols-[1fr_320px]` with main content and sticky sidebar. Main content has a consistent header (resource icon + name + StatusDot + Badge, ID row with HudLabel + CopyButton) and `TerminalTabs` (Overview + Settings minimum). Sidebar has three `TerminalCard` sections: Info Summary (tag="INFO"), Actions (tag="CMD"), and Related Resources (tag="LINKS"). Delete lives in sidebar Actions + Settings danger zone, not in the header. Instance has 5 tabs (Overview, Logs, Networking, Payment, Settings) with extracted tab components. The Overview tab cross-references `instance.authorized_keys` with the user's SSH key list (`useSSHKeys()`) to show key names alongside IDs. Simpler resources (domain, volume, website) have Overview + Settings.
-**Key files:** `packages/console/src/app/(console)/compute/[id]/page.tsx`, `packages/console/src/components/compute/detail/`, `packages/console/src/app/(console)/infrastructure/*/[id]/page.tsx`
+**Key files:** `packages/console/src/app/(console)/compute/[id]/page.tsx` (server wrapper), `packages/console/src/app/(console)/compute/[id]/instance-detail-client.tsx` (client component), `packages/console/src/components/compute/detail/`, `packages/console/src/app/(console)/infrastructure/*/[id]/page.tsx`, `packages/console/src/app/(console)/infrastructure/*/[id]/*-detail-client.tsx`
 **Notes:** Volume and instance delete use `highRisk` prop on `DeleteConfirmationModal` for type-to-confirm. Instance actions (start/stop/reboot) appear in the sidebar Actions card. The sidebar layout mirrors the connected dashboard's `grid-cols-[1fr_320px]` with a sticky right column. On mobile (< lg breakpoint), the sidebar stacks below main content.
 
 **Cross-entity health checks:** When a resource depends on another (e.g., website → volume), both list and detail pages should detect missing dependencies. The website list page fetches all volumes via `useVolumes`, builds a `Set<string>` of volume IDs, and renders a `StatusDot` + label ("Live" / "Volume Missing") per row. The detail page captures `isError` from `useVolume` and shows a "Volume Missing" badge in the header, "Unavailable" for size, and a warning `Alert` in the version card with the volume ID as copyable text (not a link). Gateway cards naturally hide when volume is missing since `cidV1` is null.
@@ -204,6 +204,28 @@ message (PublishedMessage)
 | Volume / Domain / Website / SSH Key | Available | N/A (no payment) |
 
 **Key files:** `packages/aleph-sdk/node_modules/@aleph-sdk/message/dist/index.d.ts` (upstream types), `packages/aleph-sdk/src/managers/instance.ts:627` (parseMessages example), `packages/aleph-sdk/src/types/executable.ts` (Executable type with optional chain)
+
+### IPFS Static Export
+**Context:** The console deploys to IPFS, which is a static file host with no server-side routing. Next.js must produce a fully static build.
+**Approach:** `next.config.ts` sets `output: "export"`, `trailingSlash: true`, and `images: { unoptimized: true }`. This generates a `packages/console/out/` directory with static HTML/CSS/JS.
+
+**Dynamic routes (`[id]` pages):** Static export requires `generateStaticParams` on every dynamic route, but `'use client'` pages can't export it. Each dynamic route is split into two files:
+- `page.tsx` — thin server component that exports `generateStaticParams` and renders the client component with the resolved `id` prop
+- `*-detail-client.tsx` — `'use client'` component with all the original UI logic, accepting `{ id: string }` as a prop
+
+`generateStaticParams` returns `[{ id: '_' }]` (a placeholder). This generates a single `_/index.html` per route. An empty array `[]` causes Next.js to error.
+
+**`useSearchParams` pages:** Static export pre-renders all pages at build time, which fails if `useSearchParams()` is called outside a `<Suspense>` boundary. All pages using `useSearchParams` (directly or via `useResourceList`) wrap their content in `<Suspense>`: the default export returns `<Suspense><PageContent /></Suspense>`, with the actual logic in a sibling function component.
+
+**Affected files:**
+| Pattern | Files |
+|---------|-------|
+| Server/client split | `compute/[id]/`, `infrastructure/domains/[id]/`, `infrastructure/volumes/[id]/`, `infrastructure/websites/[id]/` |
+| Suspense wrapper | `compute/page.tsx`, `compute/ssh-keys/page.tsx`, `infrastructure/domains/page.tsx`, `infrastructure/volumes/page.tsx`, `infrastructure/websites/page.tsx` |
+
+**IPFS routing limitation:** Client-side navigation (Next.js `<Link>`, `router.push`) works because it doesn't hit the IPFS gateway. Direct URL access or page refresh on a detail page (e.g., `/compute/abc123/`) will 404 because IPFS has no `abc123/` directory — only the `_/` placeholder exists. The v1 console has the same limitation. This requires SPA fallback at the gateway level to resolve.
+
+**Key files:** `packages/console/next.config.ts` (export config), `packages/console/out/` (build output, 28MB, gitignored)
 
 ### Tailwind CSS 4 + Turbopack
 **Context:** Next.js 16 with pnpm monorepo. Tailwind CSS 4 uses `@tailwindcss/postcss` plugin.

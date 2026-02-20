@@ -89,6 +89,14 @@ function WebsiteRowActions({
 }
 
 export default function WebsitesPage() {
+  return (
+    <Suspense>
+      <WebsitesContent />
+    </Suspense>
+  )
+}
+
+function WebsitesContent() {
   const { data: websites = [], isPending } = useWebsites()
   const { data: volumes = [], isPending: volumesPending } = useVolumes()
   const deleteWebsite = useDeleteWebsite()

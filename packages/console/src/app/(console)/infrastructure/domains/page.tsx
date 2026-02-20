@@ -79,6 +79,14 @@ function DomainRowActions({
 }
 
 export default function DomainsPage() {
+  return (
+    <Suspense>
+      <DomainsContent />
+    </Suspense>
+  )
+}
+
+function DomainsContent() {
   const { data: domains = [], isPending } = useDomains()
   const deleteDomain = useDeleteDomain()
   const { openDrawer, closeDrawer } = useDrawer()
