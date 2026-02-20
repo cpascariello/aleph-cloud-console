@@ -24,6 +24,9 @@ for (
 const turboRoot = commonParts.join(path.sep) || path.sep;
 
 const nextConfig: NextConfig = {
+  output: "export",
+  trailingSlash: true,
+  images: { unoptimized: true },
   outputFileTracingRoot: turboRoot,
   transpilePackages: ["data-terminal"],
   turbopack: {

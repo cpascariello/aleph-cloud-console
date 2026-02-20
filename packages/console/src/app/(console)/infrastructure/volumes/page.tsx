@@ -105,6 +105,14 @@ function VolumeRowActions({
 }
 
 export default function VolumesPage() {
+  return (
+    <Suspense>
+      <VolumesContent />
+    </Suspense>
+  )
+}
+
+function VolumesContent() {
   const { data: volumes = [], isPending } = useVolumes()
   const { data: instances = [] } = useInstances()
   const { data: programs = [] } = usePrograms()

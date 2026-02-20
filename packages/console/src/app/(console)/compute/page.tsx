@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { TerminalTabs, Button } from '@/components/data-terminal'
 import { PageHeader } from '@/components/shell/page-header'
@@ -9,22 +10,24 @@ import { Plus } from 'lucide-react'
 
 export default function ComputePage() {
   return (
-    <div className="flex flex-col gap-6">
-      <PageHeader>
-        <Link href="/compute/new">
-          <Button variant="primary" size="sm" iconLeft={<Plus size={16} />}>
-            Deploy
-          </Button>
-        </Link>
-      </PageHeader>
-      <TerminalTabs
-        tabs={[
-          { label: 'Instances', content: <InstancesTab /> },
-          { label: 'GPU', content: <GpuTab /> },
-          { label: 'Confidential', content: <ConfidentialTab /> },
-          { label: 'Functions', content: <FunctionsTab /> },
-        ]}
-      />
-    </div>
+    <Suspense>
+      <div className="flex flex-col gap-6">
+        <PageHeader>
+          <Link href="/compute/new">
+            <Button variant="primary" size="sm" iconLeft={<Plus size={16} />}>
+              Deploy
+            </Button>
+          </Link>
+        </PageHeader>
+        <TerminalTabs
+          tabs={[
+            { label: 'Instances', content: <InstancesTab /> },
+            { label: 'GPU', content: <GpuTab /> },
+            { label: 'Confidential', content: <ConfidentialTab /> },
+            { label: 'Functions', content: <FunctionsTab /> },
+          ]}
+        />
+      </div>
+    </Suspense>
   )
 }

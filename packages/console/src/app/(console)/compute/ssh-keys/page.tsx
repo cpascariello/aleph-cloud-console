@@ -41,6 +41,14 @@ function truncateKey(key: string): string {
 }
 
 export default function SSHKeysPage() {
+  return (
+    <Suspense>
+      <SSHKeysContent />
+    </Suspense>
+  )
+}
+
+function SSHKeysContent() {
   const { data: sshKeys = [], isPending } = useSSHKeys()
   const deleteSSHKey = useDeleteSSHKey()
   const createSSHKey = useCreateSSHKey()
